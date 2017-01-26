@@ -8,7 +8,6 @@
         android:layout_alignParentTop="true"
         android:layout_above="@+id/et_player_name"
         android:id="@+id/lst_firefighter"
-        android:entries="@array/firefighter_names"
         android:choiceMode="singleChoice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -17,7 +16,7 @@
         android:layout_alignParentBottom="true"
         android:id="@+id/et_player_name"
         android:hint="@string/hint_name"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

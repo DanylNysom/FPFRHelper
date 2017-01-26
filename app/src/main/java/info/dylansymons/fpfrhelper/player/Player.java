@@ -31,6 +31,12 @@ public class Player {
 
     @Override
     public String toString() {
-        return getName() + " (" + getFirefighter() + ")";
+        if (name != null && !name.isEmpty()) {
+            return getFirefighter() + " (" + getName() + ")";
+        } else if (firefighter != null) {
+            return getFirefighter();
+        } else {
+            return "";
+        }
     }
 }

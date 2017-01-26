@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+<!--    <MultiSelectListPreference
+        android:defaultValue="@array/default_expansions_array"
+        android:entries="@array/pref_expansions_titles"
+        android:entryValues="@array/pref_expansions_values"
+        android:key="expansions"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_expansions" /> -->
+    <SwitchPreference
+        android:key="pref_base"
+        android:title="@string/base"
+        android:defaultValue="true" />
+    <SwitchPreference
+        android:key="pref_urban"
+        android:title="@string/urban"
+        android:defaultValue="false" />
+    <SwitchPreference
+        android:key="pref_veteran_dog"
+        android:title="@string/veteran_dog"
+        android:defaultValue="false" />
+
+</PreferenceScreen>

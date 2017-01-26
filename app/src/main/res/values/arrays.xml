@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="firefighters_base_names">
+        <item>CAFS Firefighter</item>
+        <item>Driver/Operator</item>
+        <item>Fire Captain</item>
+        <item>Generalist</item>
+        <item>Hazmat Technician</item>
+        <item>Imaging Technician</item>
+        <item>Paramedic</item>
+        <item>Rescue Specialist</item>
+    </string-array>
+    <string-array name="firefighters_urban_names">
+        <item>Structural Engineer</item>
+    </string-array>
+    <string-array name="firefighters_veteran_dog_names">
+        <item>Rescue Dog</item>
+        <item>Veteran</item>
+    </string-array>
+
+    <string-array name="default_expansions_array">
+        <item>@string/base</item>
+    </string-array>
+    <string-array name="pref_expansions_titles">
+        <item>@string/base</item>
+        <item>@string/urban</item>
+        <item>@string/veteran_dog</item>
+    </string-array>
+    <string-array name="pref_expansions_values">
+        <item>@string/base</item>
+        <item>@string/urban</item>
+        <item>@string/veteran_dog</item>
+    </string-array>
+</resources>
