@@ -3,8 +3,14 @@ package info.dylansymons.fpfrhelper.firefighter;
 import java.util.HashSet;
 
 /**
- * Created by dylan on 1/26/17.
+ * A Firefighter with no specialty.
+ *
+ * The Generalist receives an additional Action Point each turn, for a total of 5. Only 4 Action
+ * Points can be saved per turn.
+ *
+ * @author dylan
  */
+@SuppressWarnings("unused")
 public class FirefighterGeneralist extends Firefighter {
     @Override
     public String getTitle() {

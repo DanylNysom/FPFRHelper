@@ -3,8 +3,16 @@ package info.dylansymons.fpfrhelper.firefighter;
 import java.util.HashSet;
 
 /**
- * Created by dylan on 1/26/17.
+ * A Firefighter that specializes in rescuing Victims.
+ *
+ * The Rescue Specialist receives 3 extra Action Points per turn that can only be used for movement.
+ * He or she also only pays 1 Action Point to enact the Chop Action.
+ *
+ * The Rescue Specialist pays double Action Points to extinguish Fire and Smoke.
+ *
+ * @author dylan
  */
+@SuppressWarnings("unused")
 public class FirefighterRescueSpecialist extends Firefighter {
     @Override
     public String getTitle() {

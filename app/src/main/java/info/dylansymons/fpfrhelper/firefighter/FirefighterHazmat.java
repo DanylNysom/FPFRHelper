@@ -3,8 +3,14 @@ package info.dylansymons.fpfrhelper.firefighter;
 import java.util.HashSet;
 
 /**
- * Created by dylan on 1/26/17.
+ * A Firefighter that specializes in disposing of Hazardous Materials.
+ *
+ * For a cost of 2 Action Points, the Hazmat Technician can remove a Hazmat token from the board.
+ * The Hazmat must be in the same space as the Hazmat Technician.
+ *
+ * @author dylan
  */
+@SuppressWarnings("unused")
 public class FirefighterHazmat extends Firefighter {
     @Override
     public String getTitle() {

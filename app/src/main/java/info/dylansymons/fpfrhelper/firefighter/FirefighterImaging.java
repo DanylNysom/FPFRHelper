@@ -3,8 +3,14 @@ package info.dylansymons.fpfrhelper.firefighter;
 import java.util.HashSet;
 
 /**
- * Created by dylan on 1/26/17.
+ * A Firefighter specializing in determining where Victims are.
+ *
+ * The Imaging Technician has a special Action "Identify" that can be used to flip over a POI
+ * anywhere on the board for a cost of 1 Action Point.
+ *
+ * @author dylan
  */
+@SuppressWarnings("unused")
 public class FirefighterImaging extends Firefighter {
     @Override
     public String getTitle() {

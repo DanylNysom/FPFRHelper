@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Created by dylan on 12/28/16.
+ * @author dylan
  */
 public class PlayerList implements Serializable {
     public static final int DEFAULT_PLAYER_COUNT = 6;

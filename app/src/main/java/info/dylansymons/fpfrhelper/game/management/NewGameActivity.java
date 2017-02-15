@@ -298,7 +298,6 @@ public class NewGameActivity extends AppCompatActivity {
         for(Firefighter toRemove : chosenFirefighters) {
             firefighterList.remove(toRemove);
         }
-//        firefighterList.removeAll(chosenFirefighters);
         if (firefighterList.size() > 1) {
             firefighterList.add(0, new FirefighterRandom());
         }

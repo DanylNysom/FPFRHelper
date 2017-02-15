@@ -8,9 +8,8 @@ import android.widget.TextView;
 import info.dylansymons.fpfrhelper.R;
 
 /**
- * Created by dylan on 1/2/17.
+ * @author dylan
  */
-
 public class PlayerListViewAdapter extends RecyclerView.Adapter<PlayerListViewAdapter.ViewHolder> {
     private final PlayerList mPlayerList;
 

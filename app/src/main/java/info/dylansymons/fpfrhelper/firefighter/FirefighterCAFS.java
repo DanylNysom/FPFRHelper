@@ -3,8 +3,14 @@ package info.dylansymons.fpfrhelper.firefighter;
 import java.util.HashSet;
 
 /**
- * Created by dylan on 1/26/17.
+ * A Firefighter that specializes in Extinguishing.
+ *
+ * The CAFS Firefighter only receives 3 Action Points per turn, but receives 3 extra Action Points
+ * that can only be used to Extinguish.
+ *
+ * @author dylan
  */
+@SuppressWarnings("unused")
 public class FirefighterCAFS extends Firefighter {
     @Override
     public String getTitle() {

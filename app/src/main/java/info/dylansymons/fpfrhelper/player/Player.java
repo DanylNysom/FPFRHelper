@@ -5,7 +5,7 @@ import java.io.Serializable;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 
 /**
- * Created by dylan on 12/28/16.
+ * @author dylan
  */
 public class Player implements Serializable {
     private String name;
@@ -50,12 +50,12 @@ public class Player implements Serializable {
         return colour;
     }
 
-    public void startTurn() {
+    void startTurn() {
         currentAp = firefighter.getAp() + savedAp;
         savedAp = 0;
     }
 
-    public void endTurn() {
+    void endTurn() {
         savedAp = Math.min(firefighter.getMaxSavedAp(), currentAp);
     }
 
