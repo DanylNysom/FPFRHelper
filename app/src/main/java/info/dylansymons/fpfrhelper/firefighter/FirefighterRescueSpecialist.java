@@ -1,6 +1,5 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**

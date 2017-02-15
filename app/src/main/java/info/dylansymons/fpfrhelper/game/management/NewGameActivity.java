@@ -23,15 +23,9 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,16 +44,14 @@ import info.dylansymons.fpfrhelper.player.PlayerListViewAdapter;
 
 
 public class NewGameActivity extends AppCompatActivity {
-    private static final int DEFAULT_PLAYER_COUNT = 6;
     private PlayerList mPlayerList;
     private RecyclerView mRecyclerView;
     private PlayerListViewAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<Integer> mColourList;
 
     private HashSet<Firefighter> chosenFirefighters;
     private FloatingActionButton fab;
-    private Random rng = new Random();
+    private final Random rng = new Random();
     private Button startButton;
 
     @Override
@@ -71,7 +63,7 @@ public class NewGameActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_expansions, false);
 
-        chosenFirefighters = new HashSet<>(DEFAULT_PLAYER_COUNT);
+        chosenFirefighters = new HashSet<>(PlayerList.DEFAULT_PLAYER_COUNT);
 
         createStartButton();
         createPlayerList();
@@ -115,7 +107,7 @@ public class NewGameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mPlayerList.trim();
                 Intent intent = new Intent(NewGameActivity.this, GameActivity.class);
-                intent.putExtra(GameActivity.EXTRA_PLAYERLIST, mPlayerList);
+                intent.putExtra(GameActivity.EXTRA_PLAYER_LIST, mPlayerList);
                 startActivity(intent);
             }
         });
@@ -124,9 +116,9 @@ public class NewGameActivity extends AppCompatActivity {
     private void createPlayerList() {
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_players);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mPlayerList = new PlayerList(DEFAULT_PLAYER_COUNT);
+        mPlayerList = new PlayerList();
         mAdapter = new PlayerListViewAdapter(mPlayerList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -135,7 +127,8 @@ public class NewGameActivity extends AppCompatActivity {
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return mAdapter.move(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                mAdapter.move(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                return true;
             }
 
             @Override
@@ -151,7 +144,7 @@ public class NewGameActivity extends AppCompatActivity {
     private AlertDialog newPlayerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.dialog_new_player, null));
+        builder.setView(inflater.inflate(R.layout.dialog_new_player, mRecyclerView, false));
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -226,7 +219,13 @@ public class NewGameActivity extends AppCompatActivity {
         RadioGroup colors = (RadioGroup) dialog.findViewById(R.id.rg_colors);
         AppCompatRadioButton checkedButton = (AppCompatRadioButton)
                 dialog.findViewById(colors.getCheckedRadioButtonId());
-        int color = checkedButton.getSupportButtonTintList().getDefaultColor();
+        ColorStateList colorStateList = checkedButton.getSupportButtonTintList();
+        int color;
+        if (colorStateList != null) {
+            color = checkedButton.getSupportButtonTintList().getDefaultColor();
+        } else {
+            color = mColourList.get(0);
+        }
         mColourList.remove(Integer.valueOf(color));
         if (mColourList.isEmpty()) {
             enableFab(false);
@@ -287,8 +286,10 @@ public class NewGameActivity extends AppCompatActivity {
     }
 
     public void openSettings(MenuItem item) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
+        if(item.isEnabled()) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
     }
 
     private Firefighter[] getFirefighterList() {

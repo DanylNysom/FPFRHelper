@@ -11,7 +11,7 @@ import info.dylansymons.fpfrhelper.player.Player;
 import info.dylansymons.fpfrhelper.player.PlayerList;
 
 public class GameActivity extends AppCompatActivity {
-    public static final String EXTRA_PLAYERLIST = "PLAYER_LIST";
+    public static final String EXTRA_PLAYER_LIST = "PLAYER_LIST";
     private PlayerList mPlayerList;
     private Button nextButton;
 
@@ -22,10 +22,10 @@ public class GameActivity extends AppCompatActivity {
         if(savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
-                mPlayerList = (PlayerList) extras.getSerializable(EXTRA_PLAYERLIST);
+                mPlayerList = (PlayerList) extras.getSerializable(EXTRA_PLAYER_LIST);
             }
         } else {
-            mPlayerList = (PlayerList) savedInstanceState.getSerializable(EXTRA_PLAYERLIST);
+            mPlayerList = (PlayerList) savedInstanceState.getSerializable(EXTRA_PLAYER_LIST);
         }
         if (mPlayerList != null) {
             nextButton = (Button) findViewById(R.id.btn_next_player);

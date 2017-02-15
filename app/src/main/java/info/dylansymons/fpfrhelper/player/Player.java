@@ -30,7 +30,7 @@ public class Player implements Serializable {
         }
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
@@ -42,7 +42,7 @@ public class Player implements Serializable {
         return firefighter.getTitle();
     }
 
-    public void setColour(int colour) {
+    private void setColour(int colour) {
         this.colour = colour;
     }
 
@@ -59,7 +59,7 @@ public class Player implements Serializable {
         savedAp = Math.min(firefighter.getMaxSavedAp(), currentAp);
     }
 
-    public void setFirefighter(Firefighter firefighter) {
+    private void setFirefighter(Firefighter firefighter) {
         this.firefighter = firefighter;
     }
 

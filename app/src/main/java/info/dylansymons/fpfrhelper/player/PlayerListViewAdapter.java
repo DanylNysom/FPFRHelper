@@ -1,21 +1,18 @@
 package info.dylansymons.fpfrhelper.player;
 
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import info.dylansymons.fpfrhelper.R;
-import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 
 /**
  * Created by dylan on 1/2/17.
  */
 
 public class PlayerListViewAdapter extends RecyclerView.Adapter<PlayerListViewAdapter.ViewHolder> {
-    private PlayerList mPlayerList;
+    private final PlayerList mPlayerList;
 
     public PlayerListViewAdapter(PlayerList playerList) {
         mPlayerList = playerList;
@@ -39,15 +36,14 @@ public class PlayerListViewAdapter extends RecyclerView.Adapter<PlayerListViewAd
         return mPlayerList.size();
     }
 
-    public boolean move(int source, int destination) {
+    public void move(int source, int destination) {
         Player player = mPlayerList.remove(source);
         mPlayerList.add(destination, player);
         notifyItemMoved(source, destination);
-        return true;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView mTextView;
+        final TextView mTextView;
 
         ViewHolder(TextView itemView) {
             super(itemView);

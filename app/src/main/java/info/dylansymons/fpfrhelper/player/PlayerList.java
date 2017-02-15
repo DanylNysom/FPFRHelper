@@ -1,18 +1,18 @@
 package info.dylansymons.fpfrhelper.player;
 
 import java.io.Serializable;
-import java.lang.*;
 import java.util.ArrayList;
 
 /**
  * Created by dylan on 12/28/16.
  */
 public class PlayerList implements Serializable {
+    public static final int DEFAULT_PLAYER_COUNT = 6;
     private int currentIndex;
-    private ArrayList<Player> mList;
+    private final ArrayList<Player> mList;
 
-    public PlayerList(int startCount) {
-        mList = new ArrayList<>(startCount);
+    public PlayerList() {
+        mList = new ArrayList<>(DEFAULT_PLAYER_COUNT);
         currentIndex = -1;
     }
 
