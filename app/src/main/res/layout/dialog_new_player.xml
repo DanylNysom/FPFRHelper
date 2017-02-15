@@ -5,16 +5,25 @@
     android:layout_height="match_parent">
 
     <ListView
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/et_player_name"
         android:id="@+id/lst_firefighter"
+        android:layout_above="@+id/rg_colors"
+        android:layout_alignParentTop="true"
         android:choiceMode="singleChoice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <RadioGroup
+        android:id="@+id/rg_colors"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_above="@+id/et_player_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </RadioGroup>
+
     <EditText
-        android:layout_alignParentBottom="true"
         android:id="@+id/et_player_name"
+        android:layout_alignParentBottom="true"
         android:hint="@string/hint_name"
         android:inputType="textCapWords"
         android:layout_width="match_parent"

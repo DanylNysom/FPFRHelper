@@ -10,4 +10,57 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="info.dylansymons.fpfrhelper.game.GameActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:background="#CCFFFFFF"
+        android:id="@+id/rl_title_background" >
+
+        <TextView
+            android:id="@+id/tv_firefighter_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/tv_player_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textStyle="italic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tv_firefighter_name" />
+
+        <TextView
+            android:id="@+id/tv_ap"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp" />
+
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/gv_actions"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_title_background"
+        android:layout_above="@+id/btn_next_player"
+        android:background="#CCFFFFFF"
+        android:layout_margin="5dp" />
+
+    <Button
+        android:id="@+id/btn_next_player"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import info.dylansymons.fpfrhelper.R;
+import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 
 /**
  * Created by dylan on 1/2/17.
@@ -54,10 +55,10 @@ public class PlayerListViewAdapter extends RecyclerView.Adapter<PlayerListViewAd
         }
     }
 
-    public String remove(int position) {
-        String firefighter = mPlayerList.get(position).getFirefighter();
+    public Player remove(int position) {
+        Player player = mPlayerList.get(position);
         mPlayerList.remove(position);
         notifyItemRemoved(position);
-        return firefighter;
+        return player;
     }
 }

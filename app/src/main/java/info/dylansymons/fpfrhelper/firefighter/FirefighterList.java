@@ -15,23 +15,40 @@ import info.dylansymons.fpfrhelper.R;
  */
 
 public class FirefighterList {
-    private static String[] firefighters;
+    private static Firefighter[] firefighters;
 
-    public static String[] getList(Context context) {
-        ArrayList<String> list = new ArrayList<>(20);
+    public static Firefighter[] getList(Context context) {
+        ArrayList<Firefighter> list = new ArrayList<>(20);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Resources res = context.getResources();
         if (prefs.getBoolean("pref_base", true)) {
-            list.addAll(Arrays.asList(res.getStringArray(R.array.firefighters_base_names)));
+            String[] titles = res.getStringArray(R.array.firefighters_base_names);
+            addFirefighters(titles, list);
         }
         if (prefs.getBoolean("pref_urban", false)) {
-            list.addAll(Arrays.asList(res.getStringArray(R.array.firefighters_urban_names)));
+            String[] titles = res.getStringArray(R.array.firefighters_urban_names);
+            addFirefighters(titles, list);
         }
         if (prefs.getBoolean("pref_veteran_dog", false)) {
-            list.addAll(Arrays.asList(res.getStringArray(R.array.firefighters_veteran_dog_names)));
+            String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
+            addFirefighters(titles, list);
         }
-        firefighters = list.toArray(new String[0]);
-        Arrays.sort(firefighters);
+        firefighters = list.toArray(new Firefighter[0]);
+//        Arrays.sort(firefighters);
         return firefighters;
+    }
+
+    private static void addFirefighters(String[] titles, ArrayList<Firefighter> list) {
+        for(String title : titles) {
+            try {
+                list.add((Firefighter) Class.forName("info.dylansymons.fpfrhelper.firefighter." + title).newInstance());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

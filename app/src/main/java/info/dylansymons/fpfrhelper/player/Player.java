@@ -1,32 +1,70 @@
 package info.dylansymons.fpfrhelper.player;
 
+import java.io.Serializable;
+
+import info.dylansymons.fpfrhelper.firefighter.Firefighter;
+
 /**
  * Created by dylan on 12/28/16.
  */
-public class Player {
+public class Player implements Serializable {
     private String name;
-    private String firefighter;
+    private Firefighter firefighter;
+    private int currentAp;
+    private int savedAp;
+    private int colour;
 
-    public Player(String name, String firefighter) {
+    public Player(String name, Firefighter firefighter, int colour) {
         setName(name);
         setFirefighter(firefighter);
+        setColour(colour);
+        currentAp = 0;
+        savedAp = 0;
     }
 
-
     public String getName() {
-        return name;
+        if(name != null) {
+            return name;
+        } else {
+            return "";
+        }
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getFirefighter() {
+    public Firefighter getFirefighter() {
         return firefighter;
     }
 
-    public void setFirefighter(String firefighter) {
+    public String getFirefighterTitle() {
+        return firefighter.getTitle();
+    }
+
+    public void setColour(int colour) {
+        this.colour = colour;
+    }
+
+    public int getColour() {
+        return colour;
+    }
+
+    public void startTurn() {
+        currentAp = firefighter.getAp() + savedAp;
+        savedAp = 0;
+    }
+
+    public void endTurn() {
+        savedAp = Math.min(firefighter.getMaxSavedAp(), currentAp);
+    }
+
+    public void setFirefighter(Firefighter firefighter) {
         this.firefighter = firefighter;
+    }
+
+    public int getAp() {
+        return currentAp;
     }
 
     @Override
@@ -34,7 +72,7 @@ public class Player {
         if (name != null && !name.isEmpty()) {
             return getFirefighter() + " (" + getName() + ")";
         } else if (firefighter != null) {
-            return getFirefighter();
+            return getFirefighter().toString();
         } else {
             return "";
         }
