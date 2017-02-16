@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in Extinguishing.
@@ -23,8 +23,24 @@ public class FirefighterCAFS extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(9);
+    public int getBonusAp() {
+        return 3;
+    }
+
+    @Override
+    public String getBonusApLabel() {
+        return "Extinguish";
+    }
+
+    @Override
+    public boolean hasBonusApFor(Action action) {
+        String name = action.getShortDescription();
+        return (name.equals(Action.EXTINGUISH.getShortDescription()));
+    }
+
+    @Override
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);

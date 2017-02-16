@@ -1,7 +1,7 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter role for a player of the Game.
@@ -35,7 +35,7 @@ public abstract class Firefighter implements Serializable {
      * long description, and cost of each.
      * @return a set of Actions that this Firefighter may enact
      */
-    public abstract HashSet<Action> getActions();
+    public abstract ArrayList<Action> getActions();
 
     /**
      * Retrieve the number of Action Points this Firefighter receives per turn.
@@ -43,6 +43,16 @@ public abstract class Firefighter implements Serializable {
      */
     public int getAp() {
         return DEFAULT_AP;
+    }
+
+    /**
+     * Returns the amount of bonus Action Points available to this Firefighter per turn.
+     *
+     * @see Firefighter#hasBonusApFor(Action) ()
+     * @return the amount of bonus Action Points per turn; 0 by default
+     */
+    public int getBonusAp() {
+        return 0;
     }
 
     /**
@@ -80,8 +90,8 @@ public abstract class Firefighter implements Serializable {
      * @return a set containing {@link Action#MOVE}, {@link Action#MOVE_FIRE}, {@link Action#CARRY},
      * and {@link Action#OPEN_CLOSE_DOOR}
      */
-    HashSet<Action> getDefaultMoveActions() {
-        HashSet<Action> actions = new HashSet<>(4);
+    ArrayList<Action> getDefaultMoveActions() {
+        ArrayList<Action> actions = new ArrayList<>(4);
         actions.add(Action.MOVE);
         actions.add(Action.MOVE_FIRE);
         actions.add(Action.CARRY);
@@ -93,11 +103,25 @@ public abstract class Firefighter implements Serializable {
      * Returns a default set of Actions relating to Vehicles.
      * @return a set containing {@link Action#DRIVE} and {@link Action#FIRE_DECK_GUN}
      */
-    HashSet<Action> getDefaultVehicleActions() {
-        HashSet<Action> actions = new HashSet<>(2);
+    ArrayList<Action> getDefaultVehicleActions() {
+        ArrayList<Action> actions = new ArrayList<>(2);
         actions.add(Action.DRIVE);
         actions.add(Action.FIRE_DECK_GUN);
         return actions;
+    }
+
+    /**
+     * Determine if this Firefighter receives bonus Action Points for an Action
+     *
+     * @param action the Action to check if this Firefighter has bonus AP for
+     * @return true if this Firefighte receives bonus AP for the passed Action
+     */
+    public boolean hasBonusApFor(Action action) {
+        return false;
+    }
+
+    public String getBonusApLabel() {
+        return null;
     }
 
     /**
@@ -108,71 +132,93 @@ public abstract class Firefighter implements Serializable {
      */
     public static class Action {
         /**
-         * An Action representing a movement of one space by the Firefighter.
-         */
-        public static final Action MOVE = new Action(1, "Move",
-                "Move to an adjacent space without Fire");
-
-        /**
-         * An Action representing a movement of one space into Fire by the Firefighter.
-         */
-        public static final Action MOVE_FIRE = new Action(2, "Move through fire",
-                "Move to an adjacent space with Fire");
-
-        /**
-         * An Action representing a movement of one space by a Firefighter that is carrying a Victim
-         * or other object.
-         */
-        public static final Action CARRY = new Action(2, "Carry",
-                "Carry a Victim or Hazmat to an adjacent space without Fire");
-
-        /**
-         * An Action representing a Firefighter chopping into an adjacent wall by adding a damage
-         * cube to it.
-         */
-        public static final Action CHOP = new Action(2, "Chop",
-                "Place a Damage marker on a Wall segment in your space");
-
-        /**
-         * An Action representing the opening or closing of an adjacent Door by a Firefighter.
-         */
-        public static final Action OPEN_CLOSE_DOOR = new Action(1, "Open/Close Door",
-                "Flip a Door marker in your space");
-
-        /**
-         * An Action representing the extinguishing of a Fire token to a Smoke token, or a Smoke
-         * token being removed from the board. This costs 1 Action Point.
-         */
-        public static final Action EXTINGUISH = new Action(1, "Extinguish",
-                "Flip a Fire marker to Smoke, or remove a Smoke marker from the Board");
-
-        /**
-         * An Action representing the extinguishing of a Fire token to a Smoke token, or a Smoke
-         * token being removed from the board. This costs 2 Action Points.
-         */
-        public static final Action EXTINGUISH_DOUBLE = new Action(2, "Extinguish",
-                "Flip a Fire marker to Smoke, or remove a Smoke marker from the Board");
-
-        /**
-         * An Action representing the movement of a vehicle to one of the nearest Parking Spaces,
-         * costing 2 Action Points.
-         */
-        public static final Action DRIVE = new Action(2, "Drive",
-                "Drive a Vehicle");
-
-        /**
-         * An Action representing the firing of the Deck Gun.
-         */
-        public static final Action FIRE_DECK_GUN= new Action(4, "Fire the Deck Gun",
-                "Use the Engine's powerful hose to Extinguish Fires quickly");
-
-        /**
          * An Action representing a Player exchanging their Firefighter for a different one. This
          * can only be done at the start of the Player's Turn, and only when the Firefighter token
          * starts the turn on the same space as the Fire Engine.
          */
         public static final Action CREW_CHANGE = new Action(2, "Crew Change",
                 "Change Specialists while in the heat of the action");
+        /**
+         * An Action representing a movement of one space by the Firefighter.
+         */
+        static final Action MOVE = new Action(1, "Move",
+                "Move to an adjacent space without Fire");
+        /**
+         * An Action representing a movement of one space into Fire by the Firefighter.
+         */
+        static final Action MOVE_FIRE = new Action(2, "Move through fire",
+                "Move to an adjacent space with Fire");
+        /**
+         * An Action representing a movement of one space by a Firefighter that is carrying a Victim
+         * or other object.
+         */
+        static final Action CARRY = new Action(2, "Carry",
+                "Carry a Victim or Hazmat to an adjacent space without Fire");
+        /**
+         * An Action representing a Firefighter chopping into an adjacent wall by adding a damage
+         * cube to it.
+         */
+        static final Action CHOP = new Action(2, "Chop",
+                "Place a Damage marker on a Wall segment in your space");
+        /**
+         * An Action representing the opening or closing of an adjacent Door by a Firefighter.
+         */
+        static final Action OPEN_CLOSE_DOOR = new Action(1, "Open/Close Door",
+                "Flip a Door marker in your space");
+        /**
+         * An Action representing the extinguishing of a Fire token to a Smoke token, or a Smoke
+         * token being removed from the board. This costs 1 Action Point.
+         */
+        static final Action EXTINGUISH = new Action(1, "Extinguish",
+                "Flip a Fire marker to Smoke, or remove a Smoke marker from the Board");
+        /**
+         * An Action representing the extinguishing of a Fire token to a Smoke token, or a Smoke
+         * token being removed from the board. This costs 2 Action Points.
+         */
+        static final Action EXTINGUISH_DOUBLE = new Action(2, "Extinguish",
+                "Flip a Fire marker to Smoke, or remove a Smoke marker from the Board");
+        /**
+         * An Action representing the movement of a vehicle to one of the nearest Parking Spaces,
+         * costing 2 Action Points.
+         */
+        static final Action DRIVE = new Action(2, "Drive",
+                "Drive a Vehicle");
+        /**
+         * An Action representing the firing of the Deck Gun.
+         */
+        static final Action FIRE_DECK_GUN = new Action(4, "Fire the Deck Gun",
+                "Use the Engine's powerful hose to Extinguish Fires quickly");
+        private final String mShortDescription;
+        private final String mLongDescription;
+        private int mCost;
+
+        /**
+         * Creates an Action from scratch, using the given parameters
+         *
+         * @param cost             an integer number representing how many Action Points this Action costs
+         * @param shortDescription a brief (one- to five-word) name representing this Action. Not
+         *                         necessarily unique
+         * @param longDescription  a longer description giving more information about the Action. Not
+         *                         necessarily unique
+         */
+        public Action(int cost, String shortDescription, String longDescription) {
+            setCost(cost);
+            mShortDescription = shortDescription;
+            mLongDescription = longDescription;
+        }
+
+        /**
+         * Creates a new Action where the fields are all copies of another Action object.
+         * <p>
+         * This may be useful when creating an Action with a different cost from the default.
+         *
+         * @param other an Action to create a copy of
+         */
+        public Action(Action other) {
+            mCost = other.getCost();
+            mShortDescription = other.getShortDescription();
+            mLongDescription = other.getLongDescription();
+        }
 
         /**
          * Returns the number of Action Points that it costs to perform this Action.
@@ -186,7 +232,7 @@ public abstract class Firefighter implements Serializable {
          * Sets the number of Action Points that it costs to perform this Action.
          * @param cost an integer number representing how many Action Points this Action costs.
          */
-        public void setCost(int cost) {
+        void setCost(int cost) {
             this.mCost = cost;
         }
 
@@ -204,38 +250,8 @@ public abstract class Firefighter implements Serializable {
          * @return a description, unique for the Action being performed. Different Action instances
          * may have the same short and long description, but different costs
          */
-        public String getLongDescription() {
+        String getLongDescription() {
             return mLongDescription;
-        }
-
-        private int mCost;
-        private final String mShortDescription;
-        private final String mLongDescription;
-
-        /**
-         * Creates an Action from scratch, using the given parameters
-         * @param cost an integer number representing how many Action Points this Action costs
-         * @param shortDescription a brief (one- to five-word) name representing this Action. Not
-         *                         necessarily unique
-         * @param longDescription a longer description giving more information about the Action. Not
-         *                        necessarily unique
-         */
-        public Action(int cost, String shortDescription, String longDescription) {
-            setCost(cost);
-            mShortDescription = shortDescription;
-            mLongDescription = longDescription;
-        }
-
-        /**
-         * Creates a new Action where the fields are all copies of another Action object.
-         *
-         * This may be useful when creating an Action with a different cost from the default.
-         * @param other an Action to create a copy of
-         */
-        public Action(Action other) {
-            mCost = other.getCost();
-            mShortDescription = other.getShortDescription();
-            mLongDescription = other.getLongDescription();
         }
     }
 }

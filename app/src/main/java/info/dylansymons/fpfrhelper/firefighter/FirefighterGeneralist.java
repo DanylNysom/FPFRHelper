@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter with no specialty.
@@ -23,8 +23,8 @@ public class FirefighterGeneralist extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(9);
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);

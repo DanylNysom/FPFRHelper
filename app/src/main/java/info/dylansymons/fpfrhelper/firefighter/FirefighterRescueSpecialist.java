@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in rescuing Victims.
@@ -14,14 +14,34 @@ import java.util.HashSet;
  */
 @SuppressWarnings("unused")
 public class FirefighterRescueSpecialist extends Firefighter {
+
     @Override
     public String getTitle() {
         return "Rescue Specialist";
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(9);
+    public int getBonusAp() {
+        return 3;
+    }
+
+    @Override
+    public String getBonusApLabel() {
+        return "Movement";
+    }
+
+    @Override
+    public boolean hasBonusApFor(Action action) {
+        String name = action.getShortDescription();
+        return (name.equals(Action.MOVE.getShortDescription()) ||
+                name.equals(Action.MOVE_FIRE.getShortDescription()) ||
+                name.equals(Action.OPEN_CLOSE_DOOR.getShortDescription()) ||
+                name.equals(Action.CARRY.getShortDescription()));
+    }
+
+    @Override
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);

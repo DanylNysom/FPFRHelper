@@ -17,9 +17,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -42,16 +42,45 @@ import info.dylansymons.fpfrhelper.player.Player;
 import info.dylansymons.fpfrhelper.player.PlayerList;
 import info.dylansymons.fpfrhelper.player.PlayerListViewAdapter;
 
-
+/**
+ * Any Activity used to create a new Game.
+ * <p>
+ * This Activity is used to create a {@link PlayerList} of Players, ready to play the Game. Upon
+ * completion, the PlayerList is passed to a new {@link GameActivity} to actually play the game.
+ */
 public class NewGameActivity extends AppCompatActivity {
-    private PlayerList mPlayerList;
-    private RecyclerView mRecyclerView;
-    private PlayerListViewAdapter mAdapter;
-    private ArrayList<Integer> mColourList;
-
-    private HashSet<Firefighter> chosenFirefighters;
-    private FloatingActionButton fab;
+    /**
+     * Used to provide random numbers for selecting firefighters and colours, if desired by the user
+     */
     private final Random rng = new Random();
+    /**
+     * The list of players currently in the game
+     */
+    private PlayerList mPlayerList;
+    /**
+     * The view showing the user the list of players currently in the game
+     */
+    private RecyclerView mRecyclerView;
+    /**
+     * The adapter used to supply the RecyclerView
+     */
+    private PlayerListViewAdapter mAdapter;
+    /**
+     * The colors available to be selected for new players
+     */
+    private ArrayList<Integer> mColourList;
+    /**
+     * A list of the firefighters that have been chosen, to aid in showing which Firefighters are
+     * available
+     */
+    private HashSet<Firefighter> chosenFirefighters;
+    /**
+     * The action button used to add a new player
+     */
+    private FloatingActionButton fab;
+    /**
+     * The button that starts the game, launching a new GameActivity with the PlayerList
+     */
     private Button startButton;
 
     @Override
@@ -79,6 +108,10 @@ public class NewGameActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Initializes the list of colours {@link #mColourList} with the default colour choices, which
+     * come from the game itself
+     */
     private void createColourList() {
         mColourList = new ArrayList<>(6);
         mColourList.add(ContextCompat.getColor(this, android.R.color.holo_red_dark));
@@ -100,6 +133,9 @@ public class NewGameActivity extends AppCompatActivity {
         startButton.setEnabled(!chosenFirefighters.isEmpty());
     }
 
+    /**
+     * Initializes the Start Button to, when clicked, start a GameActivity
+     */
     private void createStartButton() {
         startButton = (Button)findViewById(R.id.btn_start);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +149,10 @@ public class NewGameActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up the RecyclerView that will display to the user the list of Players currently in the
+     * game, including initializing the backing list itself and the Adapter for the View
+     */
     private void createPlayerList() {
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_players);
         mRecyclerView.setHasFixedSize(true);
@@ -126,7 +166,8 @@ public class NewGameActivity extends AppCompatActivity {
                 new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
                 mAdapter.move(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return true;
             }
@@ -162,7 +203,8 @@ public class NewGameActivity extends AppCompatActivity {
         dialog.show();
 
         final ListView ffList = (ListView)dialog.findViewById(R.id.lst_firefighter);
-        ArrayAdapter<Firefighter> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1,
+        ArrayAdapter<Firefighter> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1, getFirefighterList());
         if(ffList != null) {
             ffList.setAdapter(adapter);
@@ -233,13 +275,18 @@ public class NewGameActivity extends AppCompatActivity {
         if (color == Color.BLACK) {
             color = Color.WHITE;
         }
-        System.err.println("colour is: " + color);
 
         mPlayerList.add(new Player(name, firefighter, color));
         mAdapter.notifyItemInserted(mPlayerList.size() - 1);
         startButton.setEnabled(true);
     }
 
+    /**
+     * Toggles the state of the floating action button that is used to add a new player.
+     *
+     * @param enable whether the FAB should be enabled or not. If this is true, the FAB will be
+     *               visible to the user. If it is false, the FAB will become invisible.
+     */
     private void enableFab(boolean enable) {
         if (enable) {
             fab.setVisibility(View.VISIBLE);

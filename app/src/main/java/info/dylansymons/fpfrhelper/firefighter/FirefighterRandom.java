@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Random, "dummy" Firefighter.
@@ -17,7 +17,7 @@ public class FirefighterRandom extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
+    public ArrayList<Action> getActions() {
         return null;
     }
 }

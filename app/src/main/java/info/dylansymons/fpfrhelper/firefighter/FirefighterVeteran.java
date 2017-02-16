@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in helping the team.
@@ -22,8 +22,8 @@ public class FirefighterVeteran extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(8);
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(8);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);

@@ -14,5 +14,6 @@
     <string name="urban">URBAN</string>
     <string name="veteran_dog">VETERAN</string>
     <string name="ap">%d AP</string>
+    <string name="special_cost">%d*</string>
 
 </resources>

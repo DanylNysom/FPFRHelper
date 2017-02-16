@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in being cute.
@@ -31,8 +31,8 @@ public class FirefighterDog extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(10);
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(10);
         actions.add(Action.MOVE);
         actions.add(Action.CREW_CHANGE);
         actions.add(new Action(2, "Squeeze", "Move through Damaged Wall"));

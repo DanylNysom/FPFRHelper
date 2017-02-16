@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in rebuilding and slowing the spread of Fire.
@@ -22,8 +22,8 @@ public class FirefighterStructural extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(10);
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(10);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);

@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in Firing the Deck Gun.
@@ -20,8 +20,8 @@ public class FirefighterDriver extends Firefighter {
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(9);
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
         actions.add(Action.DRIVE);
         actions.add(Action.CREW_CHANGE);
@@ -30,6 +30,7 @@ public class FirefighterDriver extends Firefighter {
 
         Action specialDeckGun = new Action(Action.FIRE_DECK_GUN);
         specialDeckGun.setCost(2);
+        actions.add(specialDeckGun);
 
         return actions;
     }

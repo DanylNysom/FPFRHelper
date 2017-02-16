@@ -1,6 +1,6 @@
 package info.dylansymons.fpfrhelper.firefighter;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * A Firefighter that specializes in moving team members.
@@ -14,21 +14,46 @@ import java.util.HashSet;
  */
 @SuppressWarnings("unused")
 public class FirefighterCaptain extends Firefighter {
+    private static final Action COMMAND1 =
+            new Action(1, "Command", "Spend AP to Move another player");
+    private static final Action COMMAND2 =
+            new Action(2, "Command", "Spend AP to Move another player");
+    private static final Action COMMAND4 =
+            new Action(4, "Command", "Spend AP to Move another player");
+
     @Override
     public String getTitle() {
         return "Fire Captain";
     }
 
     @Override
-    public HashSet<Action> getActions() {
-        HashSet<Action> actions = new HashSet<>(10);
+    public int getBonusAp() {
+        return 2;
+    }
+
+    @Override
+    public String getBonusApLabel() {
+        return "Command";
+    }
+
+    @Override
+    public boolean hasBonusApFor(Action action) {
+        String name = action.getShortDescription();
+        return (name.equals(COMMAND1.getShortDescription()));
+    }
+
+    @Override
+    public ArrayList<Action> getActions() {
+        ArrayList<Action> actions = new ArrayList<>(12);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);
         actions.add(Action.CHOP);
         actions.add(Action.EXTINGUISH);
 
-        actions.add(new Action(1, "Command", "Spend AP to Move another player"));
+        actions.add(COMMAND1);
+        actions.add(COMMAND2);
+        actions.add(COMMAND4);
 
         return actions;
     }
