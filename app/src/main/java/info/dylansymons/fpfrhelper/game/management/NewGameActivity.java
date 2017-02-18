@@ -66,6 +66,9 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     private String INSTANCE_FIREFIGHTER_LIST = "firefighters";
     private String INSTANCE_COLOUR_LIST = "colours";
 
+    private View.OnClickListener startGameListener;
+    private View.OnClickListener continueGameListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,15 +150,38 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      */
     private void createStartButton() {
         startButton = (Button)findViewById(R.id.btn_start);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        startGameListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPlayerList.trim();
+                startGame();
+            }
+        };
+        continueGameListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(NewGameActivity.this, GameActivity.class);
-                intent.putExtra(GameActivity.EXTRA_PLAYER_LIST, mPlayerList);
                 startActivity(intent);
             }
-        });
+        };
+        setStartIsContinue(false);
+    }
+
+    private void setStartIsContinue(boolean doContinue) {
+        if (!doContinue) {
+            startButton.setText("Start game");
+            startButton.setOnClickListener(startGameListener);
+        } else {
+            startButton.setText("Continue game");
+            startButton.setOnClickListener(continueGameListener);
+        }
+    }
+
+    private void startGame() {
+        mPlayerList.trim();
+        Intent intent = new Intent(NewGameActivity.this, GameActivity.class);
+        intent.putExtra(GameActivity.EXTRA_PLAYER_LIST, mPlayerList);
+        intent.putExtra(GameActivity.EXTRA_FIREFIGHTER_LIST, mFirefighters);
+        startActivity(intent);
     }
 
     /**
@@ -194,12 +220,10 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     }
 
     public void addPlayer(String name, Firefighter firefighter, int color) {
+        enableFab(false);
         mFirefighters.remove(firefighter);
 
         mColourList.remove(Integer.valueOf(color));
-        if (mColourList.isEmpty()) {
-            enableFab(false);
-        }
         if (color == Color.BLACK) {
             color = Color.WHITE;
         }
@@ -207,6 +231,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mPlayerList.add(new Player(name, firefighter, color));
         mAdapter.notifyItemInserted(mPlayerList.size() - 1);
         startButton.setEnabled(true);
+        enableFab(!mColourList.isEmpty());
     }
 
     /**

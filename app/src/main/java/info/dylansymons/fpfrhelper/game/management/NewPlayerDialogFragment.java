@@ -90,7 +90,7 @@ public class NewPlayerDialogFragment extends DialogFragment {
         final ListView ffList = (ListView) view.findViewById(R.id.lst_firefighter);
         ArrayAdapter<Firefighter> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1, mFirefighters);
+                android.R.id.text1, mFirefighters.toArray());
 
         if (ffList != null) {
             ffList.setAdapter(adapter);

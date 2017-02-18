@@ -21,13 +21,14 @@ public class FirefighterImaging extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(10);
         actions.addAll(getDefaultMoveActions());
-        actions.addAll(getDefaultVehicleActions());
-        actions.add(Action.CREW_CHANGE);
-        actions.add(Action.CHOP);
         actions.add(Action.EXTINGUISH);
+        actions.addAll(getDefaultVehicleActions());
+        actions.add(Action.CHOP);
 
         actions.add(new Action(1, "Identify",
                 "Flip a POI marker anywhere on the board"));
+
+        actions.add(Action.CREW_CHANGE);
 
         return actions;
     }

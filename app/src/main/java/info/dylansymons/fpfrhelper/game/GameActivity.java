@@ -8,17 +8,22 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import java.util.Random;
+
 import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
+import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 import info.dylansymons.fpfrhelper.player.Player;
 import info.dylansymons.fpfrhelper.player.PlayerList;
 
 public class GameActivity extends AppCompatActivity {
-    public static final String EXTRA_PLAYER_LIST = "PLAYER_LIST";
-    private PlayerList mPlayerList;
+    public static final String EXTRA_PLAYER_LIST = "players";
+    public static final String EXTRA_FIREFIGHTER_LIST = "firefighters";
+    private static PlayerList mPlayerList;
+    private static FirefighterList mFirefighterList;
+    private static Player mCurrentPlayer;
     private Button mNextButton;
     private GridView mActionView;
-    private Player mCurrentPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +33,13 @@ public class GameActivity extends AppCompatActivity {
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
                 mPlayerList = (PlayerList) extras.getSerializable(EXTRA_PLAYER_LIST);
+                mFirefighterList = (FirefighterList) extras.getSerializable(EXTRA_FIREFIGHTER_LIST);
+                mCurrentPlayer = null;
             }
         } else {
             mPlayerList = (PlayerList) savedInstanceState.getSerializable(EXTRA_PLAYER_LIST);
+            mFirefighterList = (FirefighterList)
+                    savedInstanceState.getSerializable(EXTRA_FIREFIGHTER_LIST);
         }
 
         if (mPlayerList != null) {
@@ -55,8 +64,20 @@ public class GameActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            mActionView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(EXTRA_PLAYER_LIST, mPlayerList);
+        outState.putSerializable(EXTRA_FIREFIGHTER_LIST, mFirefighterList);
     }
 
     @Override
@@ -65,10 +86,22 @@ public class GameActivity extends AppCompatActivity {
         if (mPlayerList != null) {
             setPlayer(mPlayerList.getCurrent());
         }
+        mFirefighterList = (FirefighterList)
+                savedInstanceState.getSerializable(EXTRA_FIREFIGHTER_LIST);
     }
 
     private void doAction(Firefighter.Action action) {
-        mCurrentPlayer.perform(action);
+        if (action.equals(Firefighter.Action.CREW_CHANGE)) {
+            Firefighter firefighter = mCurrentPlayer.getFirefighter();
+            mCurrentPlayer.crewChange(
+                    mFirefighterList.get(new Random().nextInt(mFirefighterList.size())),
+                    action);
+            mFirefighterList.remove(mCurrentPlayer.getFirefighter());
+            mFirefighterList.add(firefighter);
+            setTitleText();
+        } else {
+            mCurrentPlayer.perform(action);
+        }
         updateActions();
     }
 
@@ -76,21 +109,24 @@ public class GameActivity extends AppCompatActivity {
         setPlayer(mPlayerList.getNext());
     }
 
+    private void setTitleText() {
+        TextView firefighterView = (TextView) findViewById(R.id.tv_firefighter_name);
+        firefighterView.setText(mCurrentPlayer.getFirefighterTitle());
+
+        TextView playerView = (TextView) findViewById(R.id.tv_player_name);
+        playerView.setText(mCurrentPlayer.getName());
+    }
+
     private void setPlayer(Player player) {
         mCurrentPlayer = player;
         int bgColor = player.getColour();
         findViewById(R.id.activity_game).setBackgroundColor(bgColor);
 
-        TextView firefighterView = (TextView) findViewById(R.id.tv_firefighter_name);
-        firefighterView.setText(player.getFirefighterTitle());
-
-        TextView playerView = (TextView) findViewById(R.id.tv_player_name);
-        playerView.setText(player.getName());
-
         String nextPlayer = mPlayerList.peekNext().getFirefighterTitle();
         String nextLabel = getResources().getString(R.string.next_player, nextPlayer);
         mNextButton.setText(nextLabel);
 
+        setTitleText();
         updateActions();
     }
 

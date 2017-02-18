@@ -21,13 +21,13 @@ public class FirefighterHazmat extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(10);
         actions.addAll(getDefaultMoveActions());
-        actions.addAll(getDefaultVehicleActions());
-        actions.add(Action.CREW_CHANGE);
-        actions.add(Action.CHOP);
         actions.add(Action.EXTINGUISH);
+        actions.addAll(getDefaultVehicleActions());
+        actions.add(Action.CHOP);
 
         actions.add(new Action(2, "Dispose",
                 "Remove a Hazmat from the Firefighter's space and place in the Rescued spot"));
+        actions.add(Action.CREW_CHANGE);
 
         return actions;
     }

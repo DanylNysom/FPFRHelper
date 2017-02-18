@@ -43,14 +43,14 @@ public class FirefighterRescueSpecialist extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
-        actions.addAll(getDefaultVehicleActions());
-        actions.add(Action.CREW_CHANGE);
         actions.add(Action.EXTINGUISH_DOUBLE);
+        actions.addAll(getDefaultVehicleActions());
 
         Action specialChop = new Action(Action.CHOP);
         specialChop.setCost(1);
         actions.add(specialChop);
 
+        actions.add(Action.CREW_CHANGE);
         return actions;
     }
 }

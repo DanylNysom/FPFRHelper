@@ -42,10 +42,10 @@ public class FirefighterCAFS extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
-        actions.addAll(getDefaultVehicleActions());
-        actions.add(Action.CREW_CHANGE);
-        actions.add(Action.CHOP);
         actions.add(Action.EXTINGUISH);
+        actions.addAll(getDefaultVehicleActions());
+        actions.add(Action.CHOP);
+        actions.add(Action.CREW_CHANGE);
 
         return actions;
     }

@@ -26,12 +26,12 @@ public class FirefighterStructural extends Firefighter {
         ArrayList<Action> actions = new ArrayList<>(10);
         actions.addAll(getDefaultMoveActions());
         actions.addAll(getDefaultVehicleActions());
-        actions.add(Action.CREW_CHANGE);
         actions.add(Action.CHOP);
 
         actions.add(new Action(1, "Clear", "Return a Hot Spot"));
         actions.add(new Action(2, "Repair", "Return a Damage Marker"));
 
+        actions.add(Action.CREW_CHANGE);
         return actions;
     }
 }

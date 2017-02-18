@@ -34,13 +34,13 @@ public class FirefighterDog extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(10);
         actions.add(Action.MOVE);
-        actions.add(Action.CREW_CHANGE);
-        actions.add(new Action(2, "Squeeze", "Move through Damaged Wall"));
-        actions.add(new Action(0, "Reveal", "Reveal Victim in adjacent space"));
-
         Action specialCarry = new Action(Action.CARRY);
         specialCarry.setCost(4);
         actions.add(specialCarry);
+        actions.add(new Action(2, "Squeeze", "Move through Damaged Wall"));
+        actions.add(new Action(0, "Reveal", "Reveal Victim in adjacent space"));
+
+        actions.add(Action.CREW_CHANGE);
 
         return actions;
     }

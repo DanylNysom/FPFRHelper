@@ -46,14 +46,14 @@ public class FirefighterCaptain extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(12);
         actions.addAll(getDefaultMoveActions());
-        actions.addAll(getDefaultVehicleActions());
-        actions.add(Action.CREW_CHANGE);
-        actions.add(Action.CHOP);
         actions.add(Action.EXTINGUISH);
+        actions.addAll(getDefaultVehicleActions());
+        actions.add(Action.CHOP);
 
         actions.add(COMMAND1);
         actions.add(COMMAND2);
         actions.add(COMMAND4);
+        actions.add(Action.CREW_CHANGE);
 
         return actions;
     }

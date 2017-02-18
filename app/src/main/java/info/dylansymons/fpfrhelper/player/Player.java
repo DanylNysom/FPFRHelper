@@ -24,6 +24,7 @@ public class Player implements Serializable {
     private int mCurrentBonusAp;
     private int mColour;
     private Firefighter.Action[] mActions;
+    private boolean mHasActed;
 
     /**
      * Creates a new Player given a name, Firefighter, and colour
@@ -79,6 +80,7 @@ public class Player implements Serializable {
         mCurrentAp = mFirefighter.getAp() + mSavedAp;
         mSavedAp = 0;
         mCurrentBonusAp = mFirefighter.getBonusAp();
+        mHasActed = false;
     }
 
     void endTurn() {
@@ -130,6 +132,7 @@ public class Player implements Serializable {
         }
         if (cost <= mCurrentAp) {
             mCurrentAp -= cost;
+            mHasActed = true;
             return true;
         } else {
             mCurrentBonusAp = bonusAp;
@@ -164,5 +167,17 @@ public class Player implements Serializable {
         } else {
             return "";
         }
+    }
+
+    public boolean hasActed() {
+        return mHasActed;
+    }
+
+    public void crewChange(Firefighter newFirefighter, Firefighter.Action action) {
+        mCurrentAp += newFirefighter.getAp()
+                - getFirefighter().getAp();
+        mFirefighter = newFirefighter;
+        mActions = null;
+        perform(action);
     }
 }

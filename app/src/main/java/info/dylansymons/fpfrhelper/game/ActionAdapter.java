@@ -84,10 +84,11 @@ class ActionAdapter extends BaseAdapter {
         nameView.setText(name);
         costView.setText(costString);
 
-        if (mPlayer.hasPointsFor(action)) {
-            view.setVisibility(View.VISIBLE);
-        } else {
+        if (!mPlayer.hasPointsFor(action) ||
+                action.equals(Firefighter.Action.CREW_CHANGE) && mPlayer.hasActed()) {
             view.setVisibility(View.INVISIBLE);
+        } else {
+            view.setVisibility(View.VISIBLE);
         }
         return view;
     }

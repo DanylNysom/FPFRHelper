@@ -23,14 +23,13 @@ public class FirefighterDriver extends Firefighter {
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(9);
         actions.addAll(getDefaultMoveActions());
-        actions.add(Action.DRIVE);
-        actions.add(Action.CREW_CHANGE);
-        actions.add(Action.CHOP);
         actions.add(Action.EXTINGUISH);
+        actions.addAll(getDefaultVehicleActions());
+        actions.add(Action.CHOP);
+        actions.add(Action.CREW_CHANGE);
 
-        Action specialDeckGun = new Action(Action.FIRE_DECK_GUN);
-        specialDeckGun.setCost(2);
-        actions.add(specialDeckGun);
+        actions.get(actions.indexOf(Action.FIRE_DECK_GUN))
+                .setCost(2);
 
         return actions;
     }

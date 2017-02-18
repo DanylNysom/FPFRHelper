@@ -24,11 +24,11 @@ public class FirefighterParamedic extends Firefighter {
     @Override
     public ArrayList<Action> getActions() {
         ArrayList<Action> actions = new ArrayList<>(10);
-        actions.addAll(getDefaultMoveActions());
-        actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CREW_CHANGE);
-        actions.add(Action.CHOP);
+        actions.addAll(getDefaultMoveActions());
         actions.add(Action.EXTINGUISH_DOUBLE);
+        actions.addAll(getDefaultVehicleActions());
+        actions.add(Action.CHOP);
         actions.add(new Action(1, "Treat", "Resuscitate a Victim"));
 
         return actions;

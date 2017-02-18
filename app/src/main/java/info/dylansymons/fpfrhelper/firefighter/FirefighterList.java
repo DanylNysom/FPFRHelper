@@ -18,9 +18,11 @@ import info.dylansymons.fpfrhelper.R;
  * @author dylan
  */
 
-public class FirefighterList extends ArrayList<Firefighter> implements Serializable {
+public class FirefighterList implements Serializable {
+    private ArrayList<Firefighter> mFirefighters;
+
     private FirefighterList(Context context) {
-        super(20);
+        mFirefighters = new ArrayList<>(20);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Resources res = context.getResources();
         if (prefs.getBoolean("pref_base", true)) {
@@ -53,10 +55,36 @@ public class FirefighterList extends ArrayList<Firefighter> implements Serializa
     private void addFirefighters(String[] titles) {
         for(String title : titles) {
             try {
-                add((Firefighter) Class.forName("info.dylansymons.fpfrhelper.firefighter." + title).newInstance());
+                mFirefighters.add((Firefighter)
+                        Class.forName("info.dylansymons.fpfrhelper.firefighter." + title)
+                                .newInstance());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public int size() {
+        return mFirefighters.size();
+    }
+
+    public Firefighter get(int position) {
+        return mFirefighters.get(position);
+    }
+
+    public Firefighter[] toArray() {
+        return mFirefighters.toArray(new Firefighter[0]);
+    }
+
+    public boolean isEmpty() {
+        return mFirefighters.isEmpty();
+    }
+
+    public boolean remove(Firefighter firefighter) {
+        return mFirefighters.remove(firefighter);
+    }
+
+    public boolean add(Firefighter firefighter) {
+        return mFirefighters.add(firefighter);
     }
 }
