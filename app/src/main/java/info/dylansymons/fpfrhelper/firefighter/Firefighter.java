@@ -81,8 +81,10 @@ public abstract class Firefighter implements Serializable {
     @Override
     public boolean equals(Object other) {
         return super.equals(other) ||
-                (other instanceof Firefighter) &&
-                        ((Firefighter)other).getTitle().equals(getTitle());
+                ((other instanceof Firefighter) &&
+                        ((Firefighter) other).getTitle().equals(getTitle())) ||
+                (other instanceof String) &&
+                        getTitle().equals(other);
     }
 
     /**

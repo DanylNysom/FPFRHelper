@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import info.dylansymons.fpfrhelper.R;
@@ -17,40 +18,42 @@ import info.dylansymons.fpfrhelper.R;
  * @author dylan
  */
 
-public class FirefighterList {
+public class FirefighterList extends ArrayList<Firefighter> implements Serializable {
+    private FirefighterList(Context context) {
+        super(20);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Resources res = context.getResources();
+        if (prefs.getBoolean("pref_base", true)) {
+            String[] titles = res.getStringArray(R.array.firefighters_base_names);
+            addFirefighters(titles);
+        }
+        if (prefs.getBoolean("pref_urban", false)) {
+            String[] titles = res.getStringArray(R.array.firefighters_urban_names);
+            addFirefighters(titles);
+        }
+        if (prefs.getBoolean("pref_veteran_dog", false)) {
+            String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
+            addFirefighters(titles);
+        }
+    }
 
     /**
      * Returns a list of the Firefighters available based on the currently selected Expansions.
-     *
+     * <p>
      * No consideration is made to whether or not Firefighters have been selected by Players.
      *
      * @param context the context storing the SharedPreferences to retrieve the Expansion selection
      *                from
      * @return a list of the Firefighters currently available
      */
-    public static Firefighter[] getList(Context context) {
-        ArrayList<Firefighter> list = new ArrayList<>(20);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Resources res = context.getResources();
-        if (prefs.getBoolean("pref_base", true)) {
-            String[] titles = res.getStringArray(R.array.firefighters_base_names);
-            addFirefighters(titles, list);
-        }
-        if (prefs.getBoolean("pref_urban", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_urban_names);
-            addFirefighters(titles, list);
-        }
-        if (prefs.getBoolean("pref_veteran_dog", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
-            addFirefighters(titles, list);
-        }
-        return list.toArray(new Firefighter[0]);
+    public static FirefighterList getList(Context context) {
+        return new FirefighterList(context);
     }
 
-    private static void addFirefighters(String[] titles, ArrayList<Firefighter> list) {
+    private void addFirefighters(String[] titles) {
         for(String title : titles) {
             try {
-                list.add((Firefighter) Class.forName("info.dylansymons.fpfrhelper.firefighter." + title).newInstance());
+                add((Firefighter) Class.forName("info.dylansymons.fpfrhelper.firefighter." + title).newInstance());
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -54,6 +54,19 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(EXTRA_PLAYER_LIST, mPlayerList);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        mPlayerList = (PlayerList) savedInstanceState.getSerializable(EXTRA_PLAYER_LIST);
+        if (mPlayerList != null) {
+            setPlayer(mPlayerList.getCurrent());
+        }
+    }
+
     private void doAction(Firefighter.Action action) {
         mCurrentPlayer.perform(action);
         updateActions();
