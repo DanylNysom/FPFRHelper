@@ -22,17 +22,13 @@ public class FirefighterList implements Serializable {
     private static final int BASE = 0;
     private static final int URBAN = 1;
     private static final int VETERAN_DOG = 2;
-    private ArrayList<Firefighter> mFirefighters;
-    private boolean mHasRandom;
-    private boolean[] expansions = {false, false, false};
+    private final ArrayList<Firefighter> mFirefighters;
+    private final boolean[] expansions = {false, false, false};
 
-    private FirefighterList(Context context, boolean includeRandom) {
-        mHasRandom = includeRandom;
+    private FirefighterList(Context context) {
         mFirefighters = new ArrayList<>(20);
         checkExpansions(context);
-        if (mHasRandom) {
-            mFirefighters.add(0, new FirefighterRandom());
-        }
+        mFirefighters.add(0, new FirefighterRandom());
     }
 
     /**
@@ -44,8 +40,8 @@ public class FirefighterList implements Serializable {
      *                from
      * @return a list of the Firefighters currently available
      */
-    public static FirefighterList getList(Context context, boolean includeRandom) {
-        return new FirefighterList(context, includeRandom);
+    public static FirefighterList getList(Context context) {
+        return new FirefighterList(context);
     }
 
     private void addFirefighters(String[] titles) {
@@ -62,7 +58,7 @@ public class FirefighterList implements Serializable {
 
     public int size() {
         int size = mFirefighters.size();
-        return (mHasRandom) ? size - 1 : size;
+        return size - 1;
     }
 
     public Firefighter get(int position) {
@@ -77,12 +73,12 @@ public class FirefighterList implements Serializable {
         return size() == 0;
     }
 
-    public boolean remove(Firefighter firefighter) {
-        return mFirefighters.remove(firefighter);
+    public void remove(Firefighter firefighter) {
+        mFirefighters.remove(firefighter);
     }
 
-    public boolean add(Firefighter firefighter) {
-        return mFirefighters.add(firefighter);
+    public void add(Firefighter firefighter) {
+        mFirefighters.add(firefighter);
     }
 
     public Firefighter getLast() {

@@ -4,7 +4,6 @@
 
     <string name="hint_name">Enter name here&#8230;</string>
     <string name="start_game">Start game</string>
-    <string name="continue_game">Continue game</string>
 
     <string name="next_player">Next &#8212; %s</string>
 

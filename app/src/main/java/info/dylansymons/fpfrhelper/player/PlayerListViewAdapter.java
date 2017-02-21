@@ -13,7 +13,7 @@ import info.dylansymons.fpfrhelper.R;
  */
 public class PlayerListViewAdapter extends RecyclerView.Adapter<PlayerListViewAdapter.ViewHolder> {
     private final PlayerList mPlayerList;
-    private PlayerListViewAdapterCallback mCallback;
+    private final PlayerListViewAdapterCallback mCallback;
 
     public PlayerListViewAdapter(PlayerList playerList, PlayerListViewAdapterCallback callback) {
         mPlayerList = playerList;

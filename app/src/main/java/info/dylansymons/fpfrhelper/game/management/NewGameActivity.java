@@ -42,14 +42,13 @@ import info.dylansymons.fpfrhelper.player.PlayerListViewAdapterCallback;
  */
 public class NewGameActivity extends AppCompatActivity implements NewPlayerDialogFragmentCallback,
         PlayerListViewAdapterCallback {
+    private final String INSTANCE_PLAYER_LIST = "players";
+    private final String INSTANCE_FIREFIGHTER_LIST = "firefighters";
+    private final String INSTANCE_COLOUR_LIST = "colours";
     /**
      * The list of players currently in the game
      */
     private PlayerList mPlayerList;
-    /**
-     * The view showing the user the list of players currently in the game
-     */
-    private RecyclerView mRecyclerView;
     /**
      * The adapter used to supply the RecyclerView
      */
@@ -66,16 +65,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      * The button that starts the game, launching a new GameActivity with the PlayerList
      */
     private Button startButton;
-
     private FirefighterList mFirefighters;
-
-    private String INSTANCE_PLAYER_LIST = "players";
-    private String INSTANCE_FIREFIGHTER_LIST = "firefighters";
-    private String INSTANCE_COLOUR_LIST = "colours";
-
-    private View.OnClickListener startGameListener;
-    private View.OnClickListener continueGameListener;
-
     private AdView mAdView;
 
     @Override
@@ -91,7 +81,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         createColourList();
         createPlayerList();
 
-        mFirefighters = FirefighterList.getList(this, true);
+        mFirefighters = FirefighterList.getList(this);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -120,13 +110,13 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mAdView.loadAd(adRequest);
     }
 
-    void showAddDialog() {
+    private void showAddDialog() {
         DialogFragment fragment = NewPlayerDialogFragment.newInstance(
                 mFirefighters, mColourList, this);
         fragment.show(getFragmentManager(), "dialog");
     }
 
-    void showEditDialog(Player player) {
+    private void showEditDialog(Player player) {
         DialogFragment fragment = NewPlayerDialogFragment.newEditInstance(
                 mFirefighters, mColourList, this, player);
         fragment.show(getFragmentManager(), "dialog");
@@ -154,7 +144,6 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     @Override
     public void onResume() {
         super.onResume();
-        System.err.println("onresume");
         mFirefighters.checkExpansions(this);
         checkButtonEnableState();
     }
@@ -185,30 +174,12 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      */
     private void createStartButton() {
         startButton = (Button)findViewById(R.id.btn_start);
-        startGameListener = new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startGame();
             }
-        };
-        continueGameListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(NewGameActivity.this, GameActivity.class);
-                startActivity(intent);
-            }
-        };
-        setStartIsContinue(false);
-    }
-
-    private void setStartIsContinue(boolean doContinue) {
-        if (!doContinue) {
-            startButton.setText(R.string.start_game);
-            startButton.setOnClickListener(startGameListener);
-        } else {
-            startButton.setText(R.string.continue_game);
-            startButton.setOnClickListener(continueGameListener);
-        }
+        });
     }
 
     private void startGame() {
@@ -224,7 +195,10 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      * game, including initializing the backing list itself and the Adapter for the View
      */
     private void createPlayerList() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_players);
+        /*
+      The view showing the user the list of players currently in the game
+     */
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_players);
         mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);

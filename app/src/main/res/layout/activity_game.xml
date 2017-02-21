@@ -76,19 +76,26 @@
 
     </LinearLayout>
 
-    <GridView
-        android:id="@+id/gv_actions"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/btn_next_player"
         android:layout_below="@+id/rl_title_background"
-        android:layout_margin="5dp"
-        android:columnWidth="90dp"
-        android:gravity="center"
-        android:horizontalSpacing="10dp"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp" />
+        android:paddingBottom="10dp">
+
+        <GridView
+            android:id="@+id/gv_actions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:columnWidth="90dp"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="10dp" />
+
+    </android.support.design.widget.CoordinatorLayout>
 
     <Button
         android:id="@+id/btn_next_player"

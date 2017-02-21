@@ -1,6 +1,7 @@
 package info.dylansymons.fpfrhelper.player;
 
 import java.io.Serializable;
+import java.util.Stack;
 
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 
@@ -17,6 +18,7 @@ import info.dylansymons.fpfrhelper.firefighter.Firefighter;
  * @author dylan
  */
 public class Player implements Serializable {
+    private final Stack<PerformedAction> actionHistory;
     private String mName;
     private Firefighter mFirefighter;
     private int mCurrentAp;
@@ -40,6 +42,7 @@ public class Player implements Serializable {
         mCurrentAp = 0;
         mSavedAp = 0;
         mCurrentBonusAp = 0;
+        actionHistory = new Stack<>();
     }
 
     /**
@@ -93,6 +96,7 @@ public class Player implements Serializable {
         mSavedAp = 0;
         mCurrentBonusAp = mFirefighter.getBonusAp();
         mHasActed = false;
+        actionHistory.empty();
     }
 
     void endTurn() {
@@ -127,10 +131,8 @@ public class Player implements Serializable {
      *
      * @param action the Action to perform. No checks are made to ensure that the Firefighter is
      *               allowed to perform the Action
-     * @return true if the action was performed successfully, or false if the Player did not have
-     * enough Action Points.
      */
-    public boolean perform(Firefighter.Action action) {
+    public void perform(Firefighter.Action action) {
         int cost = action.getCost();
         int bonusAp = mCurrentBonusAp;
         if (mFirefighter.hasBonusApFor(action)) {
@@ -145,10 +147,10 @@ public class Player implements Serializable {
         if (cost <= mCurrentAp) {
             mCurrentAp -= cost;
             mHasActed = true;
-            return true;
+            PerformedAction performed = new PerformedAction(action, cost, bonusAp - mCurrentBonusAp);
+            actionHistory.push(performed);
         } else {
             mCurrentBonusAp = bonusAp;
-            return false;
         }
     }
 
@@ -191,5 +193,26 @@ public class Player implements Serializable {
         mFirefighter = newFirefighter;
         mActions = null;
         perform(action);
+    }
+
+    public void undoAction() {
+        if (!actionHistory.empty()) {
+            PerformedAction performedAction = actionHistory.pop();
+            System.err.println("undoing " + performedAction.action.getShortDescription());
+            mCurrentAp += performedAction.generalApUsed;
+            mCurrentBonusAp += performedAction.specialApUsed;
+        }
+    }
+
+    private class PerformedAction {
+        final Firefighter.Action action;
+        final int specialApUsed;
+        final int generalApUsed;
+
+        PerformedAction(Firefighter.Action action, int generalCost, int specialCost) {
+            this.action = action;
+            this.generalApUsed = generalCost;
+            this.specialApUsed = specialCost;
+        }
     }
 }

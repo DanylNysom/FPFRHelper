@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -26,9 +27,9 @@ import info.dylansymons.fpfrhelper.player.Player;
 
 public class NewPlayerDialogFragment extends DialogFragment {
     private static final String INSTANCE_PLAYER = "player";
-    private static String INSTANCE_FIREFIGHTER_LIST = "firefighters";
-    private static String INSTANCE_COLOUR_LIST = "colours";
-    private static String INSTANCE_CALLBACK = "callback";
+    private static final String INSTANCE_FIREFIGHTER_LIST = "firefighters";
+    private static final String INSTANCE_COLOUR_LIST = "colours";
+    private static final String INSTANCE_CALLBACK = "callback";
 
     private FirefighterList mFirefighters;
     private ArrayList<Integer> mColourList;
@@ -80,8 +81,9 @@ public class NewPlayerDialogFragment extends DialogFragment {
                 savedInstanceState.getSerializable(INSTANCE_CALLBACK);
         mPlayer = (Player) savedInstanceState.getSerializable(INSTANCE_PLAYER);
 
+        View parentView = getActivity().findViewById(R.id.content_new_game);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_player,
-                null);
+                (ViewGroup) parentView, false);
 
         if (mPlayer != null) {
             mFirefighters.add(mPlayer.getFirefighter());

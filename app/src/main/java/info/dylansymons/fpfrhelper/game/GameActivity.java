@@ -1,6 +1,7 @@
 package info.dylansymons.fpfrhelper.game;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -9,6 +10,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import java.util.Random;
+import java.util.Stack;
 
 import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
@@ -22,8 +24,10 @@ public class GameActivity extends AppCompatActivity {
     private static PlayerList mPlayerList;
     private static FirefighterList mFirefighterList;
     private static Player mCurrentPlayer;
+    private ActionAdapter mAdapter;
     private Button mNextButton;
     private GridView mActionView;
+    private Stack<Snackbar> snacks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +63,13 @@ public class GameActivity extends AppCompatActivity {
                     doAction(action);
                 }
             });
+//            mActionView.setOnTouchListener(new SwipeListener(this, this));
+            mAdapter = new ActionAdapter(this);
+            mActionView.setAdapter(mAdapter);
             setPlayer(mPlayerList.getCurrent());
         }
+
+        snacks = new Stack<>();
     }
 
     @Override
@@ -91,6 +100,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void doAction(Firefighter.Action action) {
+        final String actionName = action.getShortDescription();
         if (action.equals(Firefighter.Action.CREW_CHANGE)) {
             Firefighter firefighter = mCurrentPlayer.getFirefighter();
             mCurrentPlayer.crewChange(
@@ -102,10 +112,34 @@ public class GameActivity extends AppCompatActivity {
         } else {
             mCurrentPlayer.perform(action);
         }
+
+        snacks.push(Snackbar
+                .make(findViewById(R.id.gv_actions), actionName,
+                        Snackbar.LENGTH_INDEFINITE)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        undoAction();
+                    }
+                }));
+        snacks.peek().show();
+        updateActions();
+    }
+
+    private void undoAction() {
+        snacks.pop();
+        mCurrentPlayer.undoAction();
+        if (!snacks.isEmpty()) {
+            snacks.peek().show();
+        }
         updateActions();
     }
 
     private void endTurn() {
+        if (!snacks.isEmpty()) {
+            snacks.pop().dismiss();
+            snacks.empty();
+        }
         setPlayer(mPlayerList.getNext());
     }
 
@@ -127,6 +161,7 @@ public class GameActivity extends AppCompatActivity {
         mNextButton.setText(nextLabel);
 
         setTitleText();
+        mAdapter.setPlayer(mCurrentPlayer);
         updateActions();
     }
 
@@ -149,7 +184,6 @@ public class GameActivity extends AppCompatActivity {
             bonusApLabel.setText("");
         }
 
-        ActionAdapter adapter = new ActionAdapter(this, mCurrentPlayer);
-        mActionView.setAdapter(adapter);
+        mAdapter.update();
     }
 }

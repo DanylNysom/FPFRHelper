@@ -17,17 +17,22 @@ import info.dylansymons.fpfrhelper.player.Player;
  * GridView.
  */
 class ActionAdapter extends BaseAdapter {
+    private final Context mContext;
     private Player mPlayer;
-    private Context mContext;
 
     /**
      * Creates a new ActionAdapter
      *
      * @param context the Context to be used to initialize Views
-     * @param player  the player to retreive Actions from
      */
-    ActionAdapter(Context context, Player player) {
+    ActionAdapter(Context context) {
         mContext = context;
+    }
+
+    /**
+     * @param player the player to retrieve Actions from
+     */
+    public void setPlayer(Player player) {
         mPlayer = player;
     }
 
@@ -36,7 +41,11 @@ class ActionAdapter extends BaseAdapter {
      */
     @Override
     public int getCount() {
-        return mPlayer.getActions().length;
+        if (mPlayer != null) {
+            return mPlayer.getActions().length;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -44,7 +53,11 @@ class ActionAdapter extends BaseAdapter {
      */
     @Override
     public Object getItem(int position) {
-        return mPlayer.getActions()[position];
+        if (mPlayer != null) {
+            return mPlayer.getActions()[position];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -91,5 +104,9 @@ class ActionAdapter extends BaseAdapter {
             view.setVisibility(View.VISIBLE);
         }
         return view;
+    }
+
+    void update() {
+        notifyDataSetChanged();
     }
 }
