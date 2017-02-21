@@ -88,7 +88,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         createColourList();
         createPlayerList();
 
-        mFirefighters = FirefighterList.getList(this);
+        mFirefighters = FirefighterList.getList(this, true);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +98,10 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
             }
         });
 
+        displayAd();
+    }
+
+    private void displayAd() {
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
@@ -136,17 +140,12 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     @Override
     public void onResume() {
         super.onResume();
-        if (!mFirefighters.isEmpty()) {
-            fab.setVisibility(View.VISIBLE);
-        } else {
-            fab.setVisibility(View.INVISIBLE);
-        }
-        startButton.setEnabled(mPlayerList.size() > 0);
+        checkButtonEnableState();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    private void checkButtonEnableState() {
+        enableFab(!mFirefighters.isEmpty() && !mColourList.isEmpty());
+        startButton.setEnabled(mPlayerList.size() > 0);
     }
 
     @Override
@@ -251,7 +250,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mPlayerList.add(new Player(name, firefighter, color));
         mAdapter.notifyItemInserted(mPlayerList.size() - 1);
         startButton.setEnabled(true);
-        enableFab(!mColourList.isEmpty());
+        checkButtonEnableState();
     }
 
     /**

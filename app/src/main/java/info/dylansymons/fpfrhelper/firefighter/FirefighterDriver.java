@@ -26,10 +26,12 @@ public class FirefighterDriver extends Firefighter {
         actions.add(Action.EXTINGUISH);
         actions.addAll(getDefaultVehicleActions());
         actions.add(Action.CHOP);
-        actions.add(Action.CREW_CHANGE);
 
-        actions.get(actions.indexOf(Action.FIRE_DECK_GUN))
-                .setCost(2);
+        int deckGunIndex = actions.indexOf(Action.FIRE_DECK_GUN);
+        Action cheapDeckGun = new Action(Action.FIRE_DECK_GUN);
+        cheapDeckGun.setCost(2);
+        actions.remove(deckGunIndex);
+        actions.add(deckGunIndex, cheapDeckGun);
 
         return actions;
     }

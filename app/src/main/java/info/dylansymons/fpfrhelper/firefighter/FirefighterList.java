@@ -20,8 +20,10 @@ import info.dylansymons.fpfrhelper.R;
 
 public class FirefighterList implements Serializable {
     private ArrayList<Firefighter> mFirefighters;
+    private boolean mHasRandom;
 
-    private FirefighterList(Context context) {
+    private FirefighterList(Context context, boolean includeRandom) {
+        mHasRandom = includeRandom;
         mFirefighters = new ArrayList<>(20);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Resources res = context.getResources();
@@ -37,6 +39,9 @@ public class FirefighterList implements Serializable {
             String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
             addFirefighters(titles);
         }
+        if (mHasRandom) {
+            mFirefighters.add(0, new FirefighterRandom());
+        }
     }
 
     /**
@@ -48,8 +53,8 @@ public class FirefighterList implements Serializable {
      *                from
      * @return a list of the Firefighters currently available
      */
-    public static FirefighterList getList(Context context) {
-        return new FirefighterList(context);
+    public static FirefighterList getList(Context context, boolean includeRandom) {
+        return new FirefighterList(context, includeRandom);
     }
 
     private void addFirefighters(String[] titles) {
@@ -65,7 +70,8 @@ public class FirefighterList implements Serializable {
     }
 
     public int size() {
-        return mFirefighters.size();
+        int size = mFirefighters.size();
+        return (mHasRandom) ? size - 1 : size;
     }
 
     public Firefighter get(int position) {
@@ -77,7 +83,7 @@ public class FirefighterList implements Serializable {
     }
 
     public boolean isEmpty() {
-        return mFirefighters.isEmpty();
+        return size() == 0;
     }
 
     public boolean remove(Firefighter firefighter) {
@@ -86,5 +92,9 @@ public class FirefighterList implements Serializable {
 
     public boolean add(Firefighter firefighter) {
         return mFirefighters.add(firefighter);
+    }
+
+    public Firefighter getLast() {
+        return get(mFirefighters.size() - 1);
     }
 }

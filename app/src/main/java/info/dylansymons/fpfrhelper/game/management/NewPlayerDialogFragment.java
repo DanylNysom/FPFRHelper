@@ -22,10 +22,6 @@ import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterRandom;
 
-/**
- * Created by dylan on 2/17/17.
- */
-
 public class NewPlayerDialogFragment extends DialogFragment {
     private static String INSTANCE_FIREFIGHTER_LIST = "firefighters";
     private static String INSTANCE_COLOUR_LIST = "colours";
@@ -88,9 +84,16 @@ public class NewPlayerDialogFragment extends DialogFragment {
                 null);
 
         final ListView ffList = (ListView) view.findViewById(R.id.lst_firefighter);
+        Firefighter[] firefighterArray;
+        if (mFirefighters.size() > 1) {
+            firefighterArray = mFirefighters.toArray();
+        } else {
+            firefighterArray = new Firefighter[1];
+            firefighterArray[0] = mFirefighters.getLast();
+        }
         ArrayAdapter<Firefighter> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1, mFirefighters.toArray());
+                android.R.id.text1, firefighterArray);
 
         if (ffList != null) {
             ffList.setAdapter(adapter);
