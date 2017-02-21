@@ -15,17 +15,17 @@
 
     <Button
         android:id="@+id/btn_start"
-        android:enabled="false"
-        android:layout_alignParentTop="true"
-        android:text="@string/start_game"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:enabled="false"
+        android:text="@string/start_game" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_players"
-        android:layout_below="@+id/btn_start"
-        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/btn_start"
+        android:scrollbars="vertical" />
 
 </RelativeLayout>

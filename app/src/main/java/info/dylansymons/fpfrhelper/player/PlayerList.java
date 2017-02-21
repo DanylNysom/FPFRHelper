@@ -7,9 +7,9 @@ import java.util.ArrayList;
  * @author dylan
  */
 public class PlayerList implements Serializable {
-    public static final int DEFAULT_PLAYER_COUNT = 6;
-    private int currentIndex;
+    private static final int DEFAULT_PLAYER_COUNT = 6;
     private final ArrayList<Player> mList;
+    private int currentIndex;
 
     public PlayerList() {
         mList = new ArrayList<>(DEFAULT_PLAYER_COUNT);
@@ -60,7 +60,7 @@ public class PlayerList implements Serializable {
         return mList.get(position);
     }
 
-    public Player remove(int position) {
+    Player remove(int position) {
         return mList.remove(position);
     }
 

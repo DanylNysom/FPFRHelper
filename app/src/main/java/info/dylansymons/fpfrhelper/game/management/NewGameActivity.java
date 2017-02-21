@@ -17,6 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.util.ArrayList;
 
 import info.dylansymons.fpfrhelper.R;
@@ -69,6 +73,8 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     private View.OnClickListener startGameListener;
     private View.OnClickListener continueGameListener;
 
+    private AdView mAdView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +97,20 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
                 showDialog();
             }
         });
+
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                mAdView.setVisibility(View.GONE);
+            }
+        });
+        mAdView.loadAd(adRequest);
     }
 
     void showDialog() {
@@ -168,10 +188,10 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     private void setStartIsContinue(boolean doContinue) {
         if (!doContinue) {
-            startButton.setText("Start game");
+            startButton.setText(R.string.start_game);
             startButton.setOnClickListener(startGameListener);
         } else {
-            startButton.setText("Continue game");
+            startButton.setText(R.string.continue_game);
             startButton.setOnClickListener(continueGameListener);
         }
     }

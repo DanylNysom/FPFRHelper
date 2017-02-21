@@ -116,7 +116,7 @@ public abstract class Firefighter implements Serializable {
      * Determine if this Firefighter receives bonus Action Points for an Action
      *
      * @param action the Action to check if this Firefighter has bonus AP for
-     * @return true if this Firefighte receives bonus AP for the passed Action
+     * @return true if this Firefighter receives bonus AP for the passed Action
      */
     public boolean hasBonusApFor(Action action) {
         return false;
@@ -132,7 +132,7 @@ public abstract class Firefighter implements Serializable {
      * Each action has a Name ({@link Action#getShortDescription}), a description
      * ({@link Action#getLongDescription()}), and a cost ({@link Action#getCost()}).
      */
-    public static class Action {
+    public static class Action implements Serializable {
         /**
          * An Action representing a Player exchanging their Firefighter for a different one. This
          * can only be done at the start of the Player's Turn, and only when the Firefighter token
