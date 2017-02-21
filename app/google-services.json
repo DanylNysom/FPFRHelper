@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "95802624523",
+    "firebase_url": "https://fpfrhelper.firebaseio.com",
+    "project_id": "fpfrhelper",
+    "storage_bucket": "fpfrhelper.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95802624523:android:f66ed6463bbec8cd",
+        "android_client_info": {
+          "package_name": "info.dylansymons.fpfrhelper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "95802624523-dhl1q4aqk73a6cv7ivn2banueee1go5d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "info.dylansymons.fpfrhelper",
+            "certificate_hash": "b9d438170e72f8e6b8a1b39e15ec0fe06346aed0"
+          }
+        },
+        {
+          "client_id": "95802624523-r1318t5skrv8h490lu7tug77pofhqee0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU_DZYgOsP_quJjuVfFCFHUC4CxHolBhk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "95802624523-r1318t5skrv8h490lu7tug77pofhqee0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

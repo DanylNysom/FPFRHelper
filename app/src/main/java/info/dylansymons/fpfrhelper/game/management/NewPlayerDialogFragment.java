@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatRadioButton;
@@ -21,8 +22,10 @@ import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterRandom;
+import info.dylansymons.fpfrhelper.player.Player;
 
 public class NewPlayerDialogFragment extends DialogFragment {
+    private static final String INSTANCE_PLAYER = "player";
     private static String INSTANCE_FIREFIGHTER_LIST = "firefighters";
     private static String INSTANCE_COLOUR_LIST = "colours";
     private static String INSTANCE_CALLBACK = "callback";
@@ -30,6 +33,7 @@ public class NewPlayerDialogFragment extends DialogFragment {
     private FirefighterList mFirefighters;
     private ArrayList<Integer> mColourList;
     private NewPlayerDialogFragmentCallback mCallback;
+    private Player mPlayer;
 
     static NewPlayerDialogFragment newInstance(FirefighterList firefighterList,
                                                ArrayList<Integer> colourList,
@@ -41,6 +45,16 @@ public class NewPlayerDialogFragment extends DialogFragment {
         args.putSerializable(INSTANCE_CALLBACK, callback);
         frag.setArguments(args);
         frag.setRetainInstance(true);
+        return frag;
+    }
+
+    static NewPlayerDialogFragment newEditInstance(FirefighterList firefighterList,
+                                                   ArrayList<Integer> colourList,
+                                                   NewPlayerDialogFragmentCallback callback,
+                                                   Player player) {
+        NewPlayerDialogFragment frag = NewPlayerDialogFragment.newInstance(firefighterList,
+                colourList, callback);
+        frag.getArguments().putSerializable(INSTANCE_PLAYER, player);
         return frag;
     }
 
@@ -56,7 +70,6 @@ public class NewPlayerDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        System.err.println("oncreatedialog");
         if (savedInstanceState == null) {
             savedInstanceState = getArguments();
         }
@@ -65,6 +78,17 @@ public class NewPlayerDialogFragment extends DialogFragment {
                 savedInstanceState.getSerializable(INSTANCE_FIREFIGHTER_LIST);
         mCallback = (NewPlayerDialogFragmentCallback)
                 savedInstanceState.getSerializable(INSTANCE_CALLBACK);
+        mPlayer = (Player) savedInstanceState.getSerializable(INSTANCE_PLAYER);
+
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_player,
+                null);
+
+        if (mPlayer != null) {
+            mFirefighters.add(mPlayer.getFirefighter());
+            mColourList.add(mPlayer.getColour());
+            ((EditText) view.findViewById(R.id.et_player_name)).setText(mPlayer.getName());
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -77,11 +101,12 @@ public class NewPlayerDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
+                if (mPlayer != null) {
+                    mFirefighters.remove(mPlayer.getFirefighter());
+                    mColourList.remove(Integer.valueOf(mPlayer.getColour()));
+                }
             }
         });
-
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_new_player,
-                null);
 
         final ListView ffList = (ListView) view.findViewById(R.id.lst_firefighter);
         Firefighter[] firefighterArray;
@@ -103,13 +128,22 @@ public class NewPlayerDialogFragment extends DialogFragment {
                     ffList.setItemChecked(i, true);
                 }
             });
-            ffList.setItemChecked(0, true);
+            int position;
+            if (mPlayer != null) {
+                position = adapter.getPosition(mPlayer.getFirefighter());
+            } else {
+                position = 0;
+            }
+            ffList.setItemChecked(position, true);
         }
 
         RadioGroup colors = (RadioGroup) view.findViewById(R.id.rg_colors);
         if (colors != null && mColourList != null) {
             for (int color : mColourList) {
                 AppCompatRadioButton button = new AppCompatRadioButton(getActivity());
+                if (color == Color.WHITE) {
+                    color = Color.BLACK;
+                }
                 ColorStateList colorStateList = new ColorStateList(
                         new int[][]{
                                 new int[]{-android.R.attr.state_checked},
@@ -123,7 +157,12 @@ public class NewPlayerDialogFragment extends DialogFragment {
                 button.setSupportButtonTintList(colorStateList);
                 colors.addView(button);
             }
-            int checkPosition = new Random().nextInt(mColourList.size());
+            int checkPosition;
+            if (mPlayer == null) {
+                checkPosition = new Random().nextInt(mColourList.size());
+            } else {
+                checkPosition = mColourList.indexOf(mPlayer.getColour());
+            }
             AppCompatRadioButton checkView = (AppCompatRadioButton) colors.getChildAt(checkPosition);
             colors.check(checkView.getId());
         }
@@ -153,7 +192,14 @@ public class NewPlayerDialogFragment extends DialogFragment {
         } else {
             color = mColourList.get(0);
         }
+        if (color == Color.BLACK) {
+            color = Color.WHITE;
+        }
 
-        mCallback.addPlayer(name, firefighter, color);
+        if (mPlayer == null) {
+            mCallback.addPlayer(name, firefighter, color);
+        } else {
+            mCallback.editPlayer(name, firefighter, color, mPlayer);
+        }
     }
 }

@@ -67,4 +67,8 @@ public class PlayerList implements Serializable {
     public void add(int position, Player player) {
         mList.add(position, player);
     }
+
+    public int indexOf(Player player) {
+        return mList.indexOf(player);
+    }
 }

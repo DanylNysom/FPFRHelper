@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-    android:paddingBottom="10dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight" >
 
-</TextView>
+    <TextView
+        android:id="@+id/tv_firefighter_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+    <TextView
+        android:id="@+id/tv_player_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_firefighter_name"
+        android:layout_alignStart="@+id/tv_firefighter_name"
+        android:layout_below="@+id/tv_firefighter_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textStyle="italic" />
+</RelativeLayout>

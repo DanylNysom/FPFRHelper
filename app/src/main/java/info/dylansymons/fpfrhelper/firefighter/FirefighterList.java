@@ -19,26 +19,17 @@ import info.dylansymons.fpfrhelper.R;
  */
 
 public class FirefighterList implements Serializable {
+    private static final int BASE = 0;
+    private static final int URBAN = 1;
+    private static final int VETERAN_DOG = 2;
     private ArrayList<Firefighter> mFirefighters;
     private boolean mHasRandom;
+    private boolean[] expansions = {false, false, false};
 
     private FirefighterList(Context context, boolean includeRandom) {
         mHasRandom = includeRandom;
         mFirefighters = new ArrayList<>(20);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Resources res = context.getResources();
-        if (prefs.getBoolean("pref_base", true)) {
-            String[] titles = res.getStringArray(R.array.firefighters_base_names);
-            addFirefighters(titles);
-        }
-        if (prefs.getBoolean("pref_urban", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_urban_names);
-            addFirefighters(titles);
-        }
-        if (prefs.getBoolean("pref_veteran_dog", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
-            addFirefighters(titles);
-        }
+        checkExpansions(context);
         if (mHasRandom) {
             mFirefighters.add(0, new FirefighterRandom());
         }
@@ -96,5 +87,25 @@ public class FirefighterList implements Serializable {
 
     public Firefighter getLast() {
         return get(mFirefighters.size() - 1);
+    }
+
+    public void checkExpansions(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Resources res = context.getResources();
+        if (!expansions[BASE] && prefs.getBoolean("pref_base", true)) {
+            String[] titles = res.getStringArray(R.array.firefighters_base_names);
+            addFirefighters(titles);
+            expansions[BASE] = true;
+        }
+        if (!expansions[URBAN] && prefs.getBoolean("pref_urban", false)) {
+            String[] titles = res.getStringArray(R.array.firefighters_urban_names);
+            addFirefighters(titles);
+            expansions[URBAN] = true;
+        }
+        if (!expansions[VETERAN_DOG] && prefs.getBoolean("pref_veteran_dog", false)) {
+            String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
+            addFirefighters(titles);
+            expansions[VETERAN_DOG] = true;
+        }
     }
 }

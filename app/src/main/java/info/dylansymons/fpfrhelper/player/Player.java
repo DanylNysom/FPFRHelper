@@ -55,6 +55,10 @@ public class Player implements Serializable {
         }
     }
 
+    public void setName(String name) {
+        mName = name;
+    }
+
     /**
      * Returns the Firefighter role this Player is playing as
      *
@@ -62,6 +66,10 @@ public class Player implements Serializable {
      */
     public Firefighter getFirefighter() {
         return mFirefighter;
+    }
+
+    public void setFirefighter(Firefighter firefighter) {
+        mFirefighter = firefighter;
     }
 
     /**
@@ -74,6 +82,10 @@ public class Player implements Serializable {
 
     public int getColour() {
         return mColour;
+    }
+
+    public void setColour(int colour) {
+        mColour = colour;
     }
 
     void startTurn() {

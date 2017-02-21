@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +32,7 @@ import info.dylansymons.fpfrhelper.game.GameActivity;
 import info.dylansymons.fpfrhelper.player.Player;
 import info.dylansymons.fpfrhelper.player.PlayerList;
 import info.dylansymons.fpfrhelper.player.PlayerListViewAdapter;
+import info.dylansymons.fpfrhelper.player.PlayerListViewAdapterCallback;
 
 /**
  * Any Activity used to create a new Game.
@@ -38,7 +40,8 @@ import info.dylansymons.fpfrhelper.player.PlayerListViewAdapter;
  * This Activity is used to create a {@link PlayerList} of Players, ready to play the Game. Upon
  * completion, the PlayerList is passed to a new {@link GameActivity} to actually play the game.
  */
-public class NewGameActivity extends AppCompatActivity implements NewPlayerDialogFragmentCallback {
+public class NewGameActivity extends AppCompatActivity implements NewPlayerDialogFragmentCallback,
+        PlayerListViewAdapterCallback {
     /**
      * The list of players currently in the game
      */
@@ -94,7 +97,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                showAddDialog();
             }
         });
 
@@ -117,9 +120,15 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mAdView.loadAd(adRequest);
     }
 
-    void showDialog() {
+    void showAddDialog() {
         DialogFragment fragment = NewPlayerDialogFragment.newInstance(
                 mFirefighters, mColourList, this);
+        fragment.show(getFragmentManager(), "dialog");
+    }
+
+    void showEditDialog(Player player) {
+        DialogFragment fragment = NewPlayerDialogFragment.newEditInstance(
+                mFirefighters, mColourList, this, player);
         fragment.show(getFragmentManager(), "dialog");
     }
 
@@ -129,17 +138,24 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      */
     private void createColourList() {
         mColourList = new ArrayList<>(6);
-        mColourList.add(ContextCompat.getColor(this, android.R.color.holo_red_dark));
-        mColourList.add(ContextCompat.getColor(this, android.R.color.holo_orange_dark));
-        mColourList.add(Color.BLUE);
-        mColourList.add(Color.GREEN);
-        mColourList.add(Color.BLACK);
-        mColourList.add(Color.YELLOW);
+        int[] colors = new int[]{
+                ContextCompat.getColor(this, android.R.color.holo_red_light),
+                ContextCompat.getColor(this, android.R.color.holo_orange_light),
+                ContextCompat.getColor(this, android.R.color.holo_blue_light),
+                ContextCompat.getColor(this, android.R.color.holo_green_light),
+                ContextCompat.getColor(this, android.R.color.white),
+                Color.YELLOW
+        };
+        for (int color : colors) {
+            mColourList.add(color);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        System.err.println("onresume");
+        mFirefighters.checkExpansions(this);
         checkButtonEnableState();
     }
 
@@ -215,7 +231,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         if (mPlayerList == null) {
             mPlayerList = new PlayerList();
         }
-        mAdapter = new PlayerListViewAdapter(mPlayerList);
+        mAdapter = new PlayerListViewAdapter(mPlayerList, this);
         mRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.SimpleCallback simpleCallback =
@@ -236,6 +252,9 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+        mRecyclerView.addItemDecoration(
+                new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     public void addPlayer(String name, Firefighter firefighter, int color) {
@@ -243,13 +262,24 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mFirefighters.remove(firefighter);
 
         mColourList.remove(Integer.valueOf(color));
-        if (color == Color.BLACK) {
-            color = Color.WHITE;
-        }
 
         mPlayerList.add(new Player(name, firefighter, color));
         mAdapter.notifyItemInserted(mPlayerList.size() - 1);
-        startButton.setEnabled(true);
+        checkButtonEnableState();
+    }
+
+    public void editPlayer(String name, Firefighter firefighter, int color, Player player) {
+        enableFab(false);
+        int index = mPlayerList.indexOf(player);
+        mFirefighters.remove(firefighter);
+        player.setFirefighter(firefighter);
+
+        mColourList.remove(Integer.valueOf(color));
+        player.setColour(color);
+
+        player.setName(name);
+
+        mAdapter.notifyItemChanged(index);
         checkButtonEnableState();
     }
 
@@ -271,9 +301,6 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         Player player = mAdapter.remove(position);
         mFirefighters.add(player.getFirefighter());
         int color = player.getColour();
-        if (color == Color.WHITE) {
-            color = Color.BLACK;
-        }
         mColourList.add(color);
         if (mPlayerList.size() == 0) {
             startButton.setEnabled(false);
@@ -309,5 +336,10 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onPlayerSelected(Player player) {
+        showEditDialog(player);
     }
 }
