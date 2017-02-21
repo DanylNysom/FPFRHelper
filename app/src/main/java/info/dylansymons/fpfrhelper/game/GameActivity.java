@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
@@ -21,13 +22,15 @@ import info.dylansymons.fpfrhelper.player.PlayerList;
 public class GameActivity extends AppCompatActivity {
     public static final String EXTRA_PLAYER_LIST = "players";
     public static final String EXTRA_FIREFIGHTER_LIST = "firefighters";
+    private static final String EXTRA_SNACK_NAMES = "snack_names";
     private static PlayerList mPlayerList;
     private static FirefighterList mFirefighterList;
     private static Player mCurrentPlayer;
     private ActionAdapter mAdapter;
     private Button mNextButton;
     private GridView mActionView;
-    private Stack<Snackbar> snacks;
+    private Stack<Snackbar> mSnacks;
+    private ArrayList<String> mSnackNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +66,13 @@ public class GameActivity extends AppCompatActivity {
                     doAction(action);
                 }
             });
-//            mActionView.setOnTouchListener(new SwipeListener(this, this));
             mAdapter = new ActionAdapter(this);
             mActionView.setAdapter(mAdapter);
             setPlayer(mPlayerList.getCurrent());
         }
 
-        snacks = new Stack<>();
+        mSnacks = new Stack<>();
+        mSnackNames = new ArrayList<>();
     }
 
     @Override
@@ -87,6 +90,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(EXTRA_PLAYER_LIST, mPlayerList);
         outState.putSerializable(EXTRA_FIREFIGHTER_LIST, mFirefighterList);
+        outState.putStringArrayList(EXTRA_SNACK_NAMES, mSnackNames);
     }
 
     @Override
@@ -97,6 +101,29 @@ public class GameActivity extends AppCompatActivity {
         }
         mFirefighterList = (FirefighterList)
                 savedInstanceState.getSerializable(EXTRA_FIREFIGHTER_LIST);
+        mSnackNames = savedInstanceState.getStringArrayList(EXTRA_SNACK_NAMES);
+        if (mSnackNames != null) {
+            for (String snackName : mSnackNames) {
+                addSnackBar(snackName);
+            }
+        } else {
+            mSnackNames = new ArrayList<>();
+        }
+        if (!mSnacks.isEmpty()) {
+            mSnacks.peek().show();
+        }
+    }
+
+    private void addSnackBar(String snackName) {
+        mSnacks.push(Snackbar
+                .make(findViewById(R.id.gv_actions), snackName,
+                        Snackbar.LENGTH_INDEFINITE)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        undoAction();
+                    }
+                }));
     }
 
     private void doAction(Firefighter.Action action) {
@@ -113,32 +140,26 @@ public class GameActivity extends AppCompatActivity {
             mCurrentPlayer.perform(action);
         }
 
-        snacks.push(Snackbar
-                .make(findViewById(R.id.gv_actions), actionName,
-                        Snackbar.LENGTH_INDEFINITE)
-                .setAction("UNDO", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        undoAction();
-                    }
-                }));
-        snacks.peek().show();
+        mSnackNames.add(actionName);
+        addSnackBar(actionName);
+        mSnacks.peek().show();
         updateActions();
     }
 
     private void undoAction() {
-        snacks.pop();
+        mSnackNames.remove(mSnackNames.size() - 1);
+        mSnacks.pop();
         mCurrentPlayer.undoAction();
-        if (!snacks.isEmpty()) {
-            snacks.peek().show();
+        if (!mSnacks.isEmpty()) {
+            mSnacks.peek().show();
         }
         updateActions();
     }
 
     private void endTurn() {
-        if (!snacks.isEmpty()) {
-            snacks.pop().dismiss();
-            snacks.empty();
+        if (!mSnacks.isEmpty()) {
+            mSnacks.pop().dismiss();
+            mSnacks.empty();
         }
         setPlayer(mPlayerList.getNext());
     }

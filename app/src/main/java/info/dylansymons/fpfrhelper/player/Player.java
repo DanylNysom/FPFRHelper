@@ -204,7 +204,7 @@ public class Player implements Serializable {
         }
     }
 
-    private class PerformedAction {
+    private class PerformedAction implements Serializable {
         final Firefighter.Action action;
         final int specialApUsed;
         final int generalApUsed;
