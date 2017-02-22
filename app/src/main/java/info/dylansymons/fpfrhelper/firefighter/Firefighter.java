@@ -188,7 +188,7 @@ public abstract class Firefighter implements Serializable {
         /**
          * An Action representing the firing of the Deck Gun.
          */
-        static final Action FIRE_DECK_GUN = new Action(4, "Fire the Deck Gun",
+        static final Action FIRE_DECK_GUN = new Action(4, "Fire Deck Gun",
                 "Use the Engine's powerful hose to Extinguish Fires quickly");
         private final String mShortDescription;
         private final String mLongDescription;

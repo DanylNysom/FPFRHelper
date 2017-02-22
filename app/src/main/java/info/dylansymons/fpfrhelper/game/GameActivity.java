@@ -10,6 +10,10 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -33,11 +37,13 @@ public class GameActivity extends AppCompatActivity
     private Stack<Snackbar> mSnacks;
     private ArrayList<String> mSnackNames;
     private boolean showingCrewChange = false;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        displayAd();
         if(savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras != null) {
@@ -232,5 +238,21 @@ public class GameActivity extends AppCompatActivity
         addSnackBar(actionName);
         mSnacks.peek().show();
         setPlayer(player);
+    }
+
+    private void displayAd() {
+        mAdView = (AdView) findViewById(R.id.adView);
+        final AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                mAdView.setVisibility(View.GONE);
+            }
+        });
+        mAdView.loadAd(adRequest);
     }
 }

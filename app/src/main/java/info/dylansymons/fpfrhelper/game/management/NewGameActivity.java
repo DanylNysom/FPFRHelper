@@ -21,6 +21,7 @@ import android.widget.Button;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.ArrayList;
 
@@ -45,6 +46,9 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     private final String INSTANCE_PLAYER_LIST = "players";
     private final String INSTANCE_FIREFIGHTER_LIST = "firefighters";
     private final String INSTANCE_COLOUR_LIST = "colours";
+
+    private InterstitialAd mInterstitialAd;
+
     /**
      * The list of players currently in the game
      */
@@ -72,6 +76,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_game);
+        displayAd();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -80,6 +85,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         createStartButton();
         createColourList();
         createPlayerList();
+        loadInterstitial();
 
         mFirefighters = FirefighterList.getList(this);
 
@@ -90,8 +96,29 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
                 showAddDialog();
             }
         });
+    }
 
-        displayAd();
+    private void loadInterstitial() {
+        mInterstitialAd = new InterstitialAd(this);
+        String unitId = getResources().getString(R.string.interstitial_ad_unit_id);
+        mInterstitialAd.setAdUnitId(unitId);
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                requestNewInterstitial();
+                startGame();
+            }
+        });
+        requestNewInterstitial();
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mInterstitialAd.loadAd(adRequest);
     }
 
     private void displayAd() {
@@ -177,7 +204,11 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startGame();
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    startGame();
+                }
             }
         });
     }
@@ -276,11 +307,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mFirefighters.add(player.getFirefighter());
         int color = player.getColour();
         mColourList.add(color);
-        if (mPlayerList.size() == 0) {
-            startButton.setEnabled(false);
-        } else {
-            enableFab(true);
-        }
+        checkButtonEnableState();
     }
 
     @Override

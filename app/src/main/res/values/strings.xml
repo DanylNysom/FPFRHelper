@@ -15,6 +15,8 @@
     <string name="veteran_dog">VETERAN</string>
     <string name="ap">%d AP</string>
     <string name="special_cost">%d*</string>
-    <string name="banner_ad_unit_id">ca-app-pub-9318121007366782/7923229550</string>
+    <string name="new_game_banner_ad_unit_id">ca-app-pub-9318121007366782/7923229550</string>
+    <string name="game_banner_ad_unit_id">ca-app-pub-9318121007366782/1323135950</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-9318121007366782/2799869153</string>
 
 </resources>
