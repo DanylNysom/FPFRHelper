@@ -1,5 +1,6 @@
 package info.dylansymons.fpfrhelper.game;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,6 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.Stack;
 
 import info.dylansymons.fpfrhelper.R;
@@ -19,7 +19,8 @@ import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 import info.dylansymons.fpfrhelper.player.Player;
 import info.dylansymons.fpfrhelper.player.PlayerList;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity
+        implements ChangeFirefighterDialogFragment.Callback {
     public static final String EXTRA_PLAYER_LIST = "players";
     public static final String EXTRA_FIREFIGHTER_LIST = "firefighters";
     private static final String EXTRA_SNACK_NAMES = "snack_names";
@@ -31,6 +32,7 @@ public class GameActivity extends AppCompatActivity {
     private GridView mActionView;
     private Stack<Snackbar> mSnacks;
     private ArrayList<String> mSnackNames;
+    private boolean showingCrewChange = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,9 @@ public class GameActivity extends AppCompatActivity {
         if (!mSnacks.isEmpty()) {
             mSnacks.peek().show();
         }
+        if (showingCrewChange) {
+            showCrewChangeDialog();
+        }
     }
 
     private void addSnackBar(String snackName) {
@@ -129,31 +134,38 @@ public class GameActivity extends AppCompatActivity {
     private void doAction(Firefighter.Action action) {
         final String actionName = action.getShortDescription();
         if (action.equals(Firefighter.Action.CREW_CHANGE)) {
-            Firefighter firefighter = mCurrentPlayer.getFirefighter();
-            mCurrentPlayer.crewChange(
-                    mFirefighterList.get(new Random().nextInt(mFirefighterList.size())),
-                    action);
-            mFirefighterList.remove(mCurrentPlayer.getFirefighter());
-            mFirefighterList.add(firefighter);
-            setTitleText();
+            showCrewChangeDialog();
         } else {
             mCurrentPlayer.perform(action);
+            mSnackNames.add(actionName);
+            addSnackBar(actionName);
+            mSnacks.peek().show();
+            updateActions();
         }
+    }
 
-        mSnackNames.add(actionName);
-        addSnackBar(actionName);
-        mSnacks.peek().show();
-        updateActions();
+    private void showCrewChangeDialog() {
+        showingCrewChange = true;
+        DialogFragment fragment = ChangeFirefighterDialogFragment.newInstance(
+                mFirefighterList, mCurrentPlayer, this);
+        fragment.show(getFragmentManager(), "dialog");
     }
 
     private void undoAction() {
-        mSnackNames.remove(mSnackNames.size() - 1);
         mSnacks.pop();
-        mCurrentPlayer.undoAction();
+        String name = mSnackNames.remove(mSnackNames.size() - 1);
+        if (!name.equals(Firefighter.Action.CREW_CHANGE.getShortDescription())) {
+            mCurrentPlayer.undoAction();
+            setTitleText();
+            updateActions();
+        } else {
+            mCurrentPlayer.undoCrewChange(mFirefighterList);
+            setPlayer(mCurrentPlayer);
+        }
         if (!mSnacks.isEmpty()) {
             mSnacks.peek().show();
         }
-        updateActions();
+
     }
 
     private void endTurn() {
@@ -206,5 +218,19 @@ public class GameActivity extends AppCompatActivity {
         }
 
         mAdapter.update();
+    }
+
+    @Override
+    public void changeFirefighter(Player player, Firefighter newFirefighter) {
+        showingCrewChange = false;
+        Firefighter originalFirefighter = mCurrentPlayer.getFirefighter();
+        mCurrentPlayer.crewChange(newFirefighter);
+        mFirefighterList.remove(mCurrentPlayer.getFirefighter());
+        mFirefighterList.add(originalFirefighter);
+        String actionName = Firefighter.Action.CREW_CHANGE.getShortDescription();
+        mSnackNames.add(actionName);
+        addSnackBar(actionName);
+        mSnacks.peek().show();
+        setPlayer(player);
     }
 }

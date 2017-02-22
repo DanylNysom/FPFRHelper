@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Stack;
 
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
+import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 
 /**
  * A representation of a Player of the Game.
@@ -27,6 +28,7 @@ public class Player implements Serializable {
     private int mColour;
     private Firefighter.Action[] mActions;
     private boolean mHasActed;
+    private Firefighter previousFirefighter;
 
     /**
      * Creates a new Player given a name, Firefighter, and colour
@@ -187,21 +189,34 @@ public class Player implements Serializable {
         return mHasActed;
     }
 
-    public void crewChange(Firefighter newFirefighter, Firefighter.Action action) {
+    public void crewChange(Firefighter newFirefighter) {
+        previousFirefighter = mFirefighter;
         mCurrentAp += newFirefighter.getAp()
                 - getFirefighter().getAp();
         mFirefighter = newFirefighter;
         mActions = null;
-        perform(action);
+        perform(Firefighter.Action.CREW_CHANGE);
     }
 
     public void undoAction() {
-        if (!actionHistory.empty()) {
+        if (!actionHistory.isEmpty()) {
             PerformedAction performedAction = actionHistory.pop();
-            System.err.println("undoing " + performedAction.action.getShortDescription());
             mCurrentAp += performedAction.generalApUsed;
             mCurrentBonusAp += performedAction.specialApUsed;
         }
+        if (actionHistory.isEmpty()) {
+            mHasActed = false;
+        }
+    }
+
+    public void undoCrewChange(FirefighterList firefighters) {
+        mCurrentAp += previousFirefighter.getAp()
+                - getFirefighter().getAp();
+        firefighters.add(mFirefighter);
+        firefighters.remove(previousFirefighter);
+        mFirefighter = previousFirefighter;
+        mActions = null;
+        undoAction();
     }
 
     private class PerformedAction implements Serializable {
