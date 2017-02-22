@@ -11,16 +11,20 @@
         android:positiveButtonText="@null"
         android:title="@string/pref_title_expansions" /> -->
     <SwitchPreference
+        android:defaultValue="true"
         android:key="pref_base"
-        android:title="@string/base"
-        android:defaultValue="true" />
+        android:title="@string/base" />
     <SwitchPreference
+        android:defaultValue="false"
+        android:key="pref_prevention"
+        android:title="@string/prevention" />
+    <SwitchPreference
+        android:defaultValue="false"
         android:key="pref_urban"
-        android:title="@string/urban"
-        android:defaultValue="false" />
+        android:title="@string/urban" />
     <SwitchPreference
+        android:defaultValue="false"
         android:key="pref_veteran_dog"
-        android:title="@string/veteran_dog"
-        android:defaultValue="false" />
+        android:title="@string/veteran_dog" />
 
 </PreferenceScreen>

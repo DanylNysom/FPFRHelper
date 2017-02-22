@@ -20,10 +20,11 @@ import info.dylansymons.fpfrhelper.R;
 
 public class FirefighterList implements Serializable {
     private static final int BASE = 0;
-    private static final int URBAN = 1;
-    private static final int VETERAN_DOG = 2;
+    private static final int PREVENTION = 2;
+    private static final int URBAN = 2;
+    private static final int VETERAN_DOG = 3;
     private final ArrayList<Firefighter> mFirefighters;
-    private final boolean[] expansions = {false, false, false};
+    private final boolean[] expansions = {false, false, false, false};
 
     private FirefighterList(Context context) {
         mFirefighters = new ArrayList<>(20);
@@ -92,6 +93,11 @@ public class FirefighterList implements Serializable {
             String[] titles = res.getStringArray(R.array.firefighters_base_names);
             addFirefighters(titles);
             expansions[BASE] = true;
+        }
+        if (!expansions[PREVENTION] && prefs.getBoolean("pref_prevention", false)) {
+            String[] titles = res.getStringArray(R.array.firefighters_prevention_names);
+            addFirefighters(titles);
+            expansions[PREVENTION] = true;
         }
         if (!expansions[URBAN] && prefs.getBoolean("pref_urban", false)) {
             String[] titles = res.getStringArray(R.array.firefighters_urban_names);

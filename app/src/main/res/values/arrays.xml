@@ -17,4 +17,7 @@
         <item>FirefighterDog</item>
         <item>FirefighterVeteran</item>
     </string-array>
+    <string-array name="firefighters_prevention_names">
+        <item>FirefighterPrevention</item>
+    </string-array>
 </resources>

@@ -10,9 +10,10 @@
     <!-- Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
     <string name="pref_header_expansions">Expansions</string>
-    <string name="base">BASE</string>
-    <string name="urban">URBAN</string>
-    <string name="veteran_dog">VETERAN</string>
+    <string name="base">Base</string>
+    <string name="prevention">Fire Prevention Specialist</string>
+    <string name="urban">Urban Structures</string>
+    <string name="veteran_dog">Veteran and Rescue Dog</string>
     <string name="ap">%d AP</string>
     <string name="special_cost">%d*</string>
     <string name="new_game_banner_ad_unit_id">ca-app-pub-9318121007366782/7923229550</string>
