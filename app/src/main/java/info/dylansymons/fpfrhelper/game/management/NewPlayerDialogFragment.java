@@ -22,7 +22,6 @@ import java.util.Random;
 import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
-import info.dylansymons.fpfrhelper.firefighter.FirefighterRandom;
 import info.dylansymons.fpfrhelper.player.Player;
 
 public class NewPlayerDialogFragment extends DialogFragment {
@@ -113,7 +112,7 @@ public class NewPlayerDialogFragment extends DialogFragment {
         final ListView ffList = (ListView) view.findViewById(R.id.lst_firefighter);
         Firefighter[] firefighterArray;
         if (mFirefighters.size() > 1) {
-            firefighterArray = mFirefighters.toArray();
+            firefighterArray = mFirefighters.toArray(new Firefighter[0]);
         } else {
             firefighterArray = new Firefighter[1];
             firefighterArray[0] = mFirefighters.getLast();
@@ -179,7 +178,7 @@ public class NewPlayerDialogFragment extends DialogFragment {
         ListView ffList = (ListView) dialog.findViewById(R.id.lst_firefighter);
         int checkedPosition = ffList.getCheckedItemPosition();
         Firefighter firefighter = (Firefighter) ffList.getItemAtPosition(checkedPosition);
-        if (firefighter instanceof FirefighterRandom) {
+        if (firefighter.equals(Firefighter.RANDOM)) {
             checkedPosition = 1 + new Random().nextInt(ffList.getAdapter().getCount() - 1);
             firefighter = (Firefighter) ffList.getItemAtPosition(checkedPosition);
         }

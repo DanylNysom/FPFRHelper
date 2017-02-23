@@ -47,6 +47,10 @@ public class Player implements Serializable {
         actionHistory = new Stack<>();
     }
 
+    public Player() {
+        this(null, null, 0);
+    }
+
     /**
      * Returns the name of the person playing as this Player
      *
@@ -93,7 +97,7 @@ public class Player implements Serializable {
         mColour = colour;
     }
 
-    void startTurn() {
+    public void startTurn() {
         mCurrentAp = mFirefighter.getAp() + mSavedAp;
         mSavedAp = 0;
         mCurrentBonusAp = mFirefighter.getBonusAp();
@@ -101,7 +105,7 @@ public class Player implements Serializable {
         actionHistory.empty();
     }
 
-    void endTurn() {
+    public void endTurn() {
         mSavedAp = Math.min(mFirefighter.getMaxSavedAp(), mCurrentAp);
     }
 
@@ -109,13 +113,21 @@ public class Player implements Serializable {
         return mCurrentAp;
     }
 
+    public void setAp(int ap) {
+        mCurrentAp = ap;
+    }
+
     public int getBonusAp() {
         return mCurrentBonusAp;
     }
 
+    public void setBonusAp(int ap) {
+        mCurrentBonusAp = ap;
+    }
+
     public Firefighter.Action[] getActions() {
         if (mActions == null) {
-            mActions = mFirefighter.getActions().toArray(new Firefighter.Action[0]);
+            mActions = mFirefighter.getActions();
         }
         return mActions;
     }
@@ -149,7 +161,7 @@ public class Player implements Serializable {
         if (cost <= mCurrentAp) {
             mCurrentAp -= cost;
             mHasActed = true;
-            PerformedAction performed = new PerformedAction(action, cost, bonusAp - mCurrentBonusAp);
+            PerformedAction performed = new PerformedAction(cost, bonusAp - mCurrentBonusAp);
             actionHistory.push(performed);
         } else {
             mCurrentBonusAp = bonusAp;
@@ -219,13 +231,31 @@ public class Player implements Serializable {
         undoAction();
     }
 
+    public int getSavedAp() {
+        return mSavedAp;
+    }
+
+    public void setSavedAp(int ap) {
+        mSavedAp = ap;
+    }
+
+    public Firefighter getPreviousFirefighter() {
+        return previousFirefighter;
+    }
+
+    public void setPreviousFirefighter(Firefighter previousFirefighter) {
+        this.previousFirefighter = previousFirefighter;
+    }
+
+    public void setHasActed(boolean hasActed) {
+        mHasActed = hasActed;
+    }
+
     private class PerformedAction implements Serializable {
-        final Firefighter.Action action;
         final int specialApUsed;
         final int generalApUsed;
 
-        PerformedAction(Firefighter.Action action, int generalCost, int specialCost) {
-            this.action = action;
+        PerformedAction(int generalCost, int specialCost) {
             this.generalApUsed = generalCost;
             this.specialApUsed = specialCost;
         }

@@ -82,7 +82,7 @@ class ActionAdapter extends BaseAdapter {
         }
         Firefighter.Action action = (Firefighter.Action) getItem(position);
 
-        String name = action.getShortDescription();
+        String name = action.getName();
 
         int cost = action.getCost();
         String costString;

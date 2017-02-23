@@ -6,16 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import info.dylansymons.fpfrhelper.R;
 
 /**
  * @author dylan
  */
 public class PlayerListViewAdapter extends RecyclerView.Adapter<PlayerListViewAdapter.ViewHolder> {
-    private final PlayerList mPlayerList;
+    private final ArrayList<Player> mPlayerList;
     private final PlayerListViewAdapterCallback mCallback;
 
-    public PlayerListViewAdapter(PlayerList playerList, PlayerListViewAdapterCallback callback) {
+    public PlayerListViewAdapter(ArrayList<Player> playerList, PlayerListViewAdapterCallback callback) {
         mPlayerList = playerList;
         mCallback = callback;
     }

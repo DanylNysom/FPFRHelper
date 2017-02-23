@@ -2,13 +2,11 @@ package info.dylansymons.fpfrhelper.firefighter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-import info.dylansymons.fpfrhelper.R;
+import info.dylansymons.fpfrhelper.game.Game;
 
 /**
  * A list of Firefighters available to the current Game.
@@ -18,18 +16,21 @@ import info.dylansymons.fpfrhelper.R;
  * @author dylan
  */
 
-public class FirefighterList implements Serializable {
-    private static final int BASE = 0;
-    private static final int PREVENTION = 2;
-    private static final int URBAN = 2;
-    private static final int VETERAN_DOG = 3;
-    private final ArrayList<Firefighter> mFirefighters;
-    private final boolean[] expansions = {false, false, false, false};
+public class FirefighterList extends ArrayList<Firefighter> {
 
-    private FirefighterList(Context context) {
-        mFirefighters = new ArrayList<>(20);
-        checkExpansions(context);
-        mFirefighters.add(0, new FirefighterRandom());
+    private FirefighterList(Context context, Game game) {
+        super(20);
+        game.setFirefighterList(this);
+        game.setExpansions(checkExpansions(context, game.getExpansions()));
+        add(0, Firefighter.RANDOM);
+    }
+
+    public FirefighterList(ArrayList<Firefighter> arrayList) {
+        super(arrayList);
+    }
+
+    public FirefighterList(int count) {
+        super(count);
     }
 
     /**
@@ -41,73 +42,52 @@ public class FirefighterList implements Serializable {
      *                from
      * @return a list of the Firefighters currently available
      */
-    public static FirefighterList getList(Context context) {
-        return new FirefighterList(context);
-    }
-
-    private void addFirefighters(String[] titles) {
-        for(String title : titles) {
-            try {
-                mFirefighters.add((Firefighter)
-                        Class.forName("info.dylansymons.fpfrhelper.firefighter." + title)
-                                .newInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public static FirefighterList getList(Context context, Game game) {
+        return new FirefighterList(context, game);
     }
 
     public int size() {
-        int size = mFirefighters.size();
-        return size - 1;
-    }
-
-    public Firefighter get(int position) {
-        return mFirefighters.get(position);
-    }
-
-    public Firefighter[] toArray() {
-        return mFirefighters.toArray(new Firefighter[0]);
+        return super.size() - 1;
     }
 
     public boolean isEmpty() {
         return size() == 0;
     }
 
-    public void remove(Firefighter firefighter) {
-        mFirefighters.remove(firefighter);
-    }
-
-    public void add(Firefighter firefighter) {
-        mFirefighters.add(firefighter);
-    }
-
     public Firefighter getLast() {
-        return get(mFirefighters.size() - 1);
+        return get(size() - 1);
     }
 
-    public void checkExpansions(Context context) {
+    public boolean[] checkExpansions(Context context, boolean[] expansions) {
+        System.err.println("CHECKING EXPANSIONS");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Resources res = context.getResources();
-        if (!expansions[BASE] && prefs.getBoolean("pref_base", true)) {
-            String[] titles = res.getStringArray(R.array.firefighters_base_names);
-            addFirefighters(titles);
-            expansions[BASE] = true;
+        if (!expansions[Game.BASE] && prefs.getBoolean("pref_base", true)) {
+            System.err.println("ADDING BASE");
+            addFirefighters(Firefighter.FIREFIGHTERS_BASE);
+            expansions[Game.BASE] = true;
         }
-        if (!expansions[PREVENTION] && prefs.getBoolean("pref_prevention", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_prevention_names);
-            addFirefighters(titles);
-            expansions[PREVENTION] = true;
+        if (!expansions[Game.PREVENTION] && prefs.getBoolean("pref_prevention", false)) {
+            System.err.println("ADDING PREVENTION");
+            addFirefighters(Firefighter.FIREFIGHTERS_PREVENTION);
+            expansions[Game.PREVENTION] = true;
         }
-        if (!expansions[URBAN] && prefs.getBoolean("pref_urban", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_urban_names);
-            addFirefighters(titles);
-            expansions[URBAN] = true;
+        if (!expansions[Game.URBAN] && prefs.getBoolean("pref_urban", false)) {
+            System.err.println("ADDING URBAN");
+            addFirefighters(Firefighter.FIREFIGHTERS_URBAN);
+            expansions[Game.URBAN] = true;
         }
-        if (!expansions[VETERAN_DOG] && prefs.getBoolean("pref_veteran_dog", false)) {
-            String[] titles = res.getStringArray(R.array.firefighters_veteran_dog_names);
-            addFirefighters(titles);
-            expansions[VETERAN_DOG] = true;
+        if (!expansions[Game.VETERAN_DOG] && prefs.getBoolean("pref_veteran_dog", false)) {
+            System.err.println("ADDING DOG");
+            addFirefighters(Firefighter.FIREFIGHTERS_VETERAN_DOG);
+            expansions[Game.VETERAN_DOG] = true;
+        }
+        return expansions;
+    }
+
+    private void addFirefighters(Firefighter[] firefighters) {
+        for (Firefighter f : firefighters) {
+            System.err.println("ADDING " + f.getTitle());
+            add(f);
         }
     }
 }

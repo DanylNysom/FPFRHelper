@@ -118,6 +118,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         ads:adSize="SMART_BANNER"
-        ads:adUnitId="ca-app-pub-9318121007366782/1323135950" />
+        ads:adUnitId="@string/game_banner_ad_unit_id" />
 </RelativeLayout>
 

@@ -2,6 +2,7 @@ package info.dylansymons.fpfrhelper.game.management;
 
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,32 +28,24 @@ import java.util.ArrayList;
 
 import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.SettingsActivity;
+import info.dylansymons.fpfrhelper.database.GameContract;
+import info.dylansymons.fpfrhelper.database.GameDbHelper;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
-import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
+import info.dylansymons.fpfrhelper.game.Game;
 import info.dylansymons.fpfrhelper.game.GameActivity;
 import info.dylansymons.fpfrhelper.player.Player;
-import info.dylansymons.fpfrhelper.player.PlayerList;
 import info.dylansymons.fpfrhelper.player.PlayerListViewAdapter;
 import info.dylansymons.fpfrhelper.player.PlayerListViewAdapterCallback;
 
 /**
- * Any Activity used to create a new Game.
- * <p>
- * This Activity is used to create a {@link PlayerList} of Players, ready to play the Game. Upon
- * completion, the PlayerList is passed to a new {@link GameActivity} to actually play the game.
+ * An Activity used to create a new Game.
  */
 public class NewGameActivity extends AppCompatActivity implements NewPlayerDialogFragmentCallback,
         PlayerListViewAdapterCallback {
-    private final String INSTANCE_PLAYER_LIST = "players";
-    private final String INSTANCE_FIREFIGHTER_LIST = "firefighters";
     private final String INSTANCE_COLOUR_LIST = "colours";
-
+    private final String INSTANCE_GAME_ID = "game_id";
+    private SQLiteDatabase db;
     private InterstitialAd mInterstitialAd;
-
-    /**
-     * The list of players currently in the game
-     */
-    private PlayerList mPlayerList;
     /**
      * The adapter used to supply the RecyclerView
      */
@@ -66,15 +59,16 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      */
     private FloatingActionButton fab;
     /**
-     * The button that starts the game, launching a new GameActivity with the PlayerList
+     * The button that starts the game, launching a new GameActivity with the Game
      */
     private Button startButton;
-    private FirefighterList mFirefighters;
     private AdView mAdView;
+    private Game mGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = new GameDbHelper(this).getWritableDatabase();
         setContentView(R.layout.activity_new_game);
         displayAd();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -84,10 +78,8 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
         createStartButton();
         createColourList();
-        createPlayerList();
+        createGame();
         loadInterstitial();
-
-        mFirefighters = FirefighterList.getList(this);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +88,11 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
                 showAddDialog();
             }
         });
+    }
+
+    private void createGame() {
+        mGame = GameContract.create(db, Game.DEFAULT_NAME, this);
+        createPlayerList();
     }
 
     private void loadInterstitial() {
@@ -139,13 +136,13 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     private void showAddDialog() {
         DialogFragment fragment = NewPlayerDialogFragment.newInstance(
-                mFirefighters, mColourList, this);
+                mGame.getFirefighterList(), mColourList, this);
         fragment.show(getFragmentManager(), "dialog");
     }
 
     private void showEditDialog(Player player) {
         DialogFragment fragment = NewPlayerDialogFragment.newEditInstance(
-                mFirefighters, mColourList, this, player);
+                mGame.getFirefighterList(), mColourList, this, player);
         fragment.show(getFragmentManager(), "dialog");
     }
 
@@ -171,27 +168,26 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     @Override
     public void onResume() {
         super.onResume();
-        mFirefighters.checkExpansions(this);
+        mGame.checkExpansions(this);
         checkButtonEnableState();
     }
 
     private void checkButtonEnableState() {
-        enableFab(!mFirefighters.isEmpty() && !mColourList.isEmpty());
-        startButton.setEnabled(mPlayerList.size() > 0);
+        enableFab(!mGame.getFirefighterList().isEmpty() && !mColourList.isEmpty());
+        startButton.setEnabled(mGame.getPlayerList().size() > 0);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(INSTANCE_PLAYER_LIST, mPlayerList);
-        outState.putSerializable(INSTANCE_FIREFIGHTER_LIST, mFirefighters);
+        GameContract.save(db, mGame);
+        outState.putLong(INSTANCE_GAME_ID, mGame.getId());
         outState.putIntegerArrayList(INSTANCE_COLOUR_LIST, mColourList);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        mPlayerList = (PlayerList) savedInstanceState.getSerializable(INSTANCE_PLAYER_LIST);
-        mFirefighters = (FirefighterList)
-                savedInstanceState.getSerializable(INSTANCE_FIREFIGHTER_LIST);
+        long gameId = savedInstanceState.getLong(INSTANCE_GAME_ID);
+        mGame = GameContract.restore(db, gameId);
         mColourList = savedInstanceState.getIntegerArrayList(INSTANCE_COLOUR_LIST);
         createPlayerList();
     }
@@ -214,10 +210,9 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     }
 
     private void startGame() {
-        mPlayerList.trim();
+        GameContract.save(db, mGame);
         Intent intent = new Intent(NewGameActivity.this, GameActivity.class);
-        intent.putExtra(GameActivity.EXTRA_PLAYER_LIST, mPlayerList);
-        intent.putExtra(GameActivity.EXTRA_FIREFIGHTER_LIST, mFirefighters);
+        intent.putExtra(GameActivity.EXTRA_GAME_ID, mGame.getId());
         startActivity(intent);
     }
 
@@ -226,17 +221,17 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
      * game, including initializing the backing list itself and the Adapter for the View
      */
     private void createPlayerList() {
-        /*
-      The view showing the user the list of players currently in the game
-     */
+        ArrayList<Player> players;
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_players);
         mRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        if (mPlayerList == null) {
-            mPlayerList = new PlayerList();
+        if (mGame == null || mGame.getPlayerList() == null) {
+            players = new ArrayList<>();
+        } else {
+            players = mGame.getPlayerList();
         }
-        mAdapter = new PlayerListViewAdapter(mPlayerList, this);
+        mAdapter = new PlayerListViewAdapter(players, this);
         mRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.SimpleCallback simpleCallback =
@@ -264,19 +259,19 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     public void addPlayer(String name, Firefighter firefighter, int color) {
         enableFab(false);
-        mFirefighters.remove(firefighter);
+        mGame.getFirefighterList().remove(firefighter);
 
         mColourList.remove(Integer.valueOf(color));
 
-        mPlayerList.add(new Player(name, firefighter, color));
-        mAdapter.notifyItemInserted(mPlayerList.size() - 1);
+        mGame.getPlayerList().add(new Player(name, firefighter, color));
+        mAdapter.notifyItemInserted(mGame.getPlayerList().size() - 1);
         checkButtonEnableState();
     }
 
     public void editPlayer(String name, Firefighter firefighter, int color, Player player) {
         enableFab(false);
-        int index = mPlayerList.indexOf(player);
-        mFirefighters.remove(firefighter);
+        int index = mGame.getPlayerList().indexOf(player);
+        mGame.getFirefighterList().remove(firefighter);
         player.setFirefighter(firefighter);
 
         mColourList.remove(Integer.valueOf(color));
@@ -304,7 +299,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     private void removePlayer(int position) {
         Player player = mAdapter.remove(position);
-        mFirefighters.add(player.getFirefighter());
+        mGame.getFirefighterList().add(player.getFirefighter());
         int color = player.getColour();
         mColourList.add(color);
         checkButtonEnableState();
