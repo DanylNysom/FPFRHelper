@@ -50,9 +50,6 @@ public final class GameContract {
         PlayerContract.savePlayerList(db, game.getPlayerList(), game.getId());
         FirefighterContract.saveFirefighterList(db, game.getFirefighterList(), game.getId());
         ContentValues values = new ContentValues();
-        System.err.println("name = " + game.getName());
-        System.err.println("index = " + game.getCurrentPlayerIndex());
-        System.err.println("id = " + game.getId());
         values.put(GameEntry.COLUMN_NAME_NAME, game.getName());
         values.put(GameEntry.COLUMN_NAME_CURRENT_INDEX, game.getCurrentPlayerIndex());
 

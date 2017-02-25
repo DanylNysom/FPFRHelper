@@ -175,7 +175,7 @@ public class GameActivity extends AppCompatActivity
     private void endTurn() {
         if (!mSnacks.isEmpty()) {
             mSnacks.pop().dismiss();
-            mSnacks.empty();
+            mSnacks.clear();
         }
         mGame.getNext();
         setPlayer();

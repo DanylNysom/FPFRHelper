@@ -102,7 +102,7 @@ public class Player implements Serializable {
         mSavedAp = 0;
         mCurrentBonusAp = mFirefighter.getBonusAp();
         mHasActed = false;
-        actionHistory.empty();
+        actionHistory.clear();
     }
 
     public void endTurn() {
