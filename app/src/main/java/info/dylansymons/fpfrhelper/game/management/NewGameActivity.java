@@ -78,7 +78,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
         createStartButton();
         createColourList();
-        createGame();
+        mGame = GameContract.create(db, Game.DEFAULT_NAME, this);
         loadInterstitial();
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -88,11 +88,6 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
                 showAddDialog();
             }
         });
-    }
-
-    private void createGame() {
-        mGame = GameContract.create(db, Game.DEFAULT_NAME, this);
-        createPlayerList();
     }
 
     private void loadInterstitial() {
@@ -113,6 +108,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     private void requestNewInterstitial() {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
+                .addTestDevice("48F5874A64E7405B7BC2AB217DC30692")
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mInterstitialAd.loadAd(adRequest);
@@ -122,6 +118,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
+                .addTestDevice("48F5874A64E7405B7BC2AB217DC30692")
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mAdView.setAdListener(new AdListener() {
@@ -168,7 +165,8 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     @Override
     public void onResume() {
         super.onResume();
-        mGame.checkExpansions(this);
+        mGame = GameContract.restore(db, mGame.getId());
+        createPlayerList();
         checkButtonEnableState();
     }
 
@@ -259,7 +257,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     public void addPlayer(String name, Firefighter firefighter, int color) {
         enableFab(false);
-        mGame.getFirefighterList().remove(firefighter);
+        mGame.getFirefighterList().setChosen(firefighter, true);
 
         mColourList.remove(Integer.valueOf(color));
 
@@ -271,7 +269,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     public void editPlayer(String name, Firefighter firefighter, int color, Player player) {
         enableFab(false);
         int index = mGame.getPlayerList().indexOf(player);
-        mGame.getFirefighterList().remove(firefighter);
+        mGame.getFirefighterList().setChosen(firefighter, true);
         player.setFirefighter(firefighter);
 
         mColourList.remove(Integer.valueOf(color));
@@ -299,7 +297,7 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     private void removePlayer(int position) {
         Player player = mAdapter.remove(position);
-        mGame.getFirefighterList().add(player.getFirefighter());
+        mGame.getFirefighterList().setChosen(player.getFirefighter(), false);
         int color = player.getColour();
         mColourList.add(color);
         checkButtonEnableState();

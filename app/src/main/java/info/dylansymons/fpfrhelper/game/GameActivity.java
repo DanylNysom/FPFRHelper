@@ -22,6 +22,7 @@ import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.database.GameContract;
 import info.dylansymons.fpfrhelper.database.GameDbHelper;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
+import info.dylansymons.fpfrhelper.player.ActionAdapter;
 import info.dylansymons.fpfrhelper.player.Player;
 
 public class GameActivity extends AppCompatActivity
@@ -232,8 +233,8 @@ public class GameActivity extends AppCompatActivity
         showingCrewChange = false;
         Firefighter originalFirefighter = player.getFirefighter();
         player.crewChange(newFirefighter);
-        mGame.getFirefighterList().remove(player.getFirefighter());
-        mGame.getFirefighterList().add(originalFirefighter);
+        mGame.getFirefighterList().setChosen(player.getFirefighter(), true);
+        mGame.getFirefighterList().setChosen(originalFirefighter, false);
         String actionName = Firefighter.Action.CREW_CHANGE.getName();
         mSnackNames.add(actionName);
         addSnackBar(actionName);
@@ -245,6 +246,7 @@ public class GameActivity extends AppCompatActivity
         mAdView = (AdView) findViewById(R.id.adView);
         final AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("77442A7F1A4FD6E2660582FD97CD6707")
+                .addTestDevice("48F5874A64E7405B7BC2AB217DC30692")
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mAdView.setAdListener(new AdListener() {

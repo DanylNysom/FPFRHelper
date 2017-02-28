@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
-import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 import info.dylansymons.fpfrhelper.player.Player;
 
@@ -49,9 +48,8 @@ public class Game {
         return mFirefighterList;
     }
 
-    public void setFirefighterList(ArrayList<Firefighter> firefighterList) {
+    public void setFirefighterList(FirefighterList firefighterList) {
         mFirefighterList = new FirefighterList(firefighterList);
-        System.err.println("game has " + mFirefighterList.size() + " firefighters");
     }
 
     public int getCurrentPlayerIndex() {

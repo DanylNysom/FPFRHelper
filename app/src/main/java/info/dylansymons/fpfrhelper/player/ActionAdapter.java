@@ -1,4 +1,4 @@
-package info.dylansymons.fpfrhelper.game;
+package info.dylansymons.fpfrhelper.player;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,13 +10,12 @@ import android.widget.TextView;
 
 import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
-import info.dylansymons.fpfrhelper.player.Player;
 
 /**
  * An Adapter for managing a set of Actions and displaying them in square views ideal for a
  * GridView.
  */
-class ActionAdapter extends BaseAdapter {
+public class ActionAdapter extends BaseAdapter {
     private final Context mContext;
     private Player mPlayer;
 
@@ -25,7 +24,7 @@ class ActionAdapter extends BaseAdapter {
      *
      * @param context the Context to be used to initialize Views
      */
-    ActionAdapter(Context context) {
+    public ActionAdapter(Context context) {
         mContext = context;
     }
 
@@ -106,7 +105,7 @@ class ActionAdapter extends BaseAdapter {
         return view;
     }
 
-    void update() {
+    public void update() {
         notifyDataSetChanged();
     }
 }

@@ -17,6 +17,7 @@ import info.dylansymons.fpfrhelper.game.Game;
  */
 
 public class FirefighterList extends ArrayList<Firefighter> {
+    private ArrayList<Firefighter> chosenFirefighters = new ArrayList<>(6);
 
     private FirefighterList(Context context, Game game) {
         super(20);
@@ -59,25 +60,20 @@ public class FirefighterList extends ArrayList<Firefighter> {
     }
 
     public boolean[] checkExpansions(Context context, boolean[] expansions) {
-        System.err.println("CHECKING EXPANSIONS");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (!expansions[Game.BASE] && prefs.getBoolean("pref_base", true)) {
-            System.err.println("ADDING BASE");
             addFirefighters(Firefighter.FIREFIGHTERS_BASE);
             expansions[Game.BASE] = true;
         }
         if (!expansions[Game.PREVENTION] && prefs.getBoolean("pref_prevention", false)) {
-            System.err.println("ADDING PREVENTION");
             addFirefighters(Firefighter.FIREFIGHTERS_PREVENTION);
             expansions[Game.PREVENTION] = true;
         }
         if (!expansions[Game.URBAN] && prefs.getBoolean("pref_urban", false)) {
-            System.err.println("ADDING URBAN");
             addFirefighters(Firefighter.FIREFIGHTERS_URBAN);
             expansions[Game.URBAN] = true;
         }
         if (!expansions[Game.VETERAN_DOG] && prefs.getBoolean("pref_veteran_dog", false)) {
-            System.err.println("ADDING DOG");
             addFirefighters(Firefighter.FIREFIGHTERS_VETERAN_DOG);
             expansions[Game.VETERAN_DOG] = true;
         }
@@ -86,8 +82,21 @@ public class FirefighterList extends ArrayList<Firefighter> {
 
     private void addFirefighters(Firefighter[] firefighters) {
         for (Firefighter f : firefighters) {
-            System.err.println("ADDING " + f.getTitle());
             add(f);
+        }
+    }
+
+    public ArrayList<Firefighter> getChosen() {
+        return chosenFirefighters;
+    }
+
+    public void setChosen(Firefighter firefighter, boolean isChosen) {
+        if (isChosen) {
+            remove(firefighter);
+            chosenFirefighters.add(firefighter);
+        } else {
+            chosenFirefighters.remove(firefighter);
+            add(firefighter);
         }
     }
 }

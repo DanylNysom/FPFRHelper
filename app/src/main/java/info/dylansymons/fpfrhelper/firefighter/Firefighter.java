@@ -150,6 +150,9 @@ public class Firefighter {
                 return firefighter;
             }
         }
+        if (RANDOM.getTitle().equals(title)) {
+            return Firefighter.RANDOM;
+        }
         return null;
     }
 

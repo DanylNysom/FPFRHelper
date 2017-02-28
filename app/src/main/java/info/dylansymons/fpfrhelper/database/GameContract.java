@@ -8,7 +8,6 @@ import android.provider.BaseColumns;
 
 import java.util.ArrayList;
 
-import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
 import info.dylansymons.fpfrhelper.game.Game;
 import info.dylansymons.fpfrhelper.player.Player;
@@ -29,6 +28,7 @@ public final class GameContract {
     public static Game create(SQLiteDatabase db, String name, Context context) {
         ContentValues values = new ContentValues();
         values.put(GameEntry.COLUMN_NAME_NAME, name);
+        values.put(GameEntry.COLUMN_NAME_CURRENT_INDEX, -1);
 
         long id = db.insert(GameEntry.TABLE_NAME, null, values);
         Game game = restore(db, id);
@@ -82,7 +82,7 @@ public final class GameContract {
 
             Game game = restoreFromCursor(result);
             ArrayList<Player> playerList = PlayerContract.restorePlayerList(db, id);
-            ArrayList<Firefighter> firefighterList = FirefighterContract.restoreFirefighterList(db, id);
+            FirefighterList firefighterList = FirefighterContract.restoreFirefighterList(db, id);
 
             game.setPlayerList(playerList);
             game.setFirefighterList(firefighterList);

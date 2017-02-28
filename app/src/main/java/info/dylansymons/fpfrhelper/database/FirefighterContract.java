@@ -13,6 +13,7 @@ final class FirefighterContract {
             "CREATE TABLE " + FirefighterEntry.TABLE_NAME + " (" +
                     FirefighterEntry._ID + " INTEGER PRIMARY KEY," +
                     FirefighterEntry.COLUMN_NAME_NAME + " TEXT," +
+                    FirefighterEntry.COLUMN_NAME_AVAILABLE + " INTEGER," +
                     FirefighterEntry.COLUMN_NAME_GAME + " INTEGER REFERENCES " +
                     GameContract.GameEntry.TABLE_NAME + "(" + GameContract.GameEntry._ID + ")," +
                     FirefighterEntry.COLUMN_NAME_POSITION + " INTEGER)";
@@ -33,15 +34,18 @@ final class FirefighterContract {
         ContentValues values = new ContentValues();
         values.put(FirefighterEntry.COLUMN_NAME_NAME, firefighter.getTitle());
         values.put(FirefighterEntry.COLUMN_NAME_GAME, gameId);
+        values.put(FirefighterEntry.COLUMN_NAME_AVAILABLE, true);
         values.put(FirefighterEntry.COLUMN_NAME_POSITION, position);
 
         db.insert(FirefighterEntry.TABLE_NAME, null, values);
     }
 
-    private static void save(SQLiteDatabase db, Firefighter firefighter, long gameId, int position) {
+    private static void save(SQLiteDatabase db, Firefighter firefighter, long gameId, int position,
+                             boolean available) {
         ContentValues values = new ContentValues();
         values.put(FirefighterEntry.COLUMN_NAME_NAME, firefighter.getTitle());
         values.put(FirefighterEntry.COLUMN_NAME_GAME, gameId);
+        values.put(FirefighterEntry.COLUMN_NAME_AVAILABLE, available);
         values.put(FirefighterEntry.COLUMN_NAME_POSITION, position);
 
         String where = FirefighterEntry.COLUMN_NAME_NAME + " = ? AND " +
@@ -53,7 +57,10 @@ final class FirefighterContract {
     static void saveFirefighterList(SQLiteDatabase db, FirefighterList firefighters,
                                     long gameId) {
         for (Firefighter firefighter : firefighters) {
-            save(db, firefighter, gameId, firefighters.indexOf(firefighter));
+            save(db, firefighter, gameId, firefighters.indexOf(firefighter), true);
+        }
+        for (Firefighter chosenFirefighter : firefighters.getChosen()) {
+            save(db, chosenFirefighter, gameId, 0, false);
         }
     }
 
@@ -72,7 +79,11 @@ final class FirefighterContract {
         );
         FirefighterList firefighterList = new FirefighterList(result.getCount());
         while (result.moveToNext()) {
-            firefighterList.add(restoreFromCursor(result));
+            if (result.getInt(result.getColumnIndex(FirefighterEntry.COLUMN_NAME_AVAILABLE)) > 0) {
+                firefighterList.add(restoreFromCursor(result));
+            } else {
+                firefighterList.getChosen().add(restoreFromCursor(result));
+            }
         }
         result.close();
         return firefighterList;
@@ -80,12 +91,14 @@ final class FirefighterContract {
 
     private static Firefighter restoreFromCursor(Cursor result) {
         String name = result.getString(result.getColumnIndex(FirefighterEntry.COLUMN_NAME_NAME));
-        return Firefighter.fromTitle(name);
+        Firefighter fighter = Firefighter.fromTitle(name);
+        return fighter;
     }
 
     private static class FirefighterEntry implements BaseColumns {
         static final String COLUMN_NAME_NAME = "name";
         static final String COLUMN_NAME_GAME = "game";
+        static final String COLUMN_NAME_AVAILABLE = "available";
         static final String COLUMN_NAME_POSITION = "position";
         static final String TABLE_NAME = "firefighter";
     }
