@@ -20,4 +20,11 @@
     <string name="game_banner_ad_unit_id">ca-app-pub-9318121007366782/1323135950</string>
     <string name="interstitial_ad_unit_id">ca-app-pub-9318121007366782/2799869153</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="roll_for_fire">Roll for fire</string>
+    <string name="reroll_hint">Click the dice to roll again</string>
+    <string name="pref_roll_fire">Roll for fire between turns</string>
+    <string name="pref_header_general">General</string>
+
 </resources>

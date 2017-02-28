@@ -3,6 +3,7 @@ package info.dylansymons.fpfrhelper.game;
 import android.app.DialogFragment;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,12 +17,14 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Stack;
 
 import info.dylansymons.fpfrhelper.R;
 import info.dylansymons.fpfrhelper.database.GameContract;
 import info.dylansymons.fpfrhelper.database.GameDbHelper;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
+import info.dylansymons.fpfrhelper.game.utility.DiceRoller;
 import info.dylansymons.fpfrhelper.player.ActionAdapter;
 import info.dylansymons.fpfrhelper.player.Player;
 
@@ -36,6 +39,7 @@ public class GameActivity extends AppCompatActivity
     private ArrayList<String> mSnackNames;
     private boolean showingCrewChange = false;
     private AdView mAdView;
+    private DiceRoller mDiceRoller;
 
     private SQLiteDatabase db;
     private Game mGame;
@@ -56,13 +60,15 @@ public class GameActivity extends AppCompatActivity
         }
 
         if (mGame != null) {
-            mNextButton = (Button) findViewById(R.id.btn_next_player);
-            mNextButton.setOnClickListener(new View.OnClickListener() {
+            mDiceRoller = new DiceRoller(false);
+            View diceView = findViewById(R.id.ll_dice);
+            diceView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    endTurn();
+                    rollDice();
                 }
             });
+            mNextButton = (Button) findViewById(R.id.btn_next_player);
             mActionView = (GridView) findViewById(R.id.gv_actions);
             mActionView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -80,6 +86,59 @@ public class GameActivity extends AppCompatActivity
 
         mSnacks = new Stack<>();
         mSnackNames = new ArrayList<>();
+    }
+
+    private void showDiceRoller() {
+        if (!mSnacks.isEmpty()) {
+            mSnacks.pop().dismiss();
+            mSnacks.clear();
+        }
+        rollDice();
+        View rollView = findViewById(R.id.ll_roll_view);
+        rollView.setBackgroundColor(mGame.getCurrent().getColour());
+        rollView.setVisibility(View.VISIBLE);
+        setButtonToFireRoll(false);
+    }
+
+    private void rollDice() {
+        final TextView redView = ((TextView) findViewById(R.id.red_die));
+        final TextView blackView = ((TextView) findViewById(R.id.black_die));
+        int iterationCount = 10 + new Random().nextInt(90);
+        for (int i = 0; i < iterationCount; i++) {
+            findViewById(R.id.ll_dice).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    DiceRoller.DiceRoll roll = mDiceRoller.roll();
+                    redView.setText(String.valueOf(roll.redValue));
+                    blackView.setText(String.valueOf(roll.blackValue));
+                }
+            }, 30 * i);
+        }
+    }
+
+    private void setButtonToFireRoll(boolean fireRoll) {
+        if (fireRoll && PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("pref_roll_fire", false)) {
+            String nextLabel = getResources().getString(R.string.roll_for_fire);
+            mNextButton.setText(nextLabel);
+            mNextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDiceRoller();
+                }
+            });
+        } else {
+            String nextPlayer = mGame.peekNext().getFirefighterTitle();
+            String nextLabel = getResources().getString(R.string.next_player, nextPlayer);
+            mNextButton.setText(nextLabel);
+            mNextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    findViewById(R.id.ll_roll_view).setVisibility(View.GONE);
+                    endTurn();
+                }
+            });
+        }
     }
 
     private void restoreGame(long gameId) {
@@ -125,7 +184,7 @@ public class GameActivity extends AppCompatActivity
 
     private void addSnackBar(String snackName) {
         mSnacks.push(Snackbar
-                .make(findViewById(R.id.gv_actions), snackName,
+                .make(findViewById(R.id.content), snackName,
                         Snackbar.LENGTH_INDEFINITE)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
@@ -196,9 +255,7 @@ public class GameActivity extends AppCompatActivity
         int bgColor = currentPlayer.getColour();
         findViewById(R.id.activity_game).setBackgroundColor(bgColor);
 
-        String nextPlayer = mGame.peekNext().getFirefighterTitle();
-        String nextLabel = getResources().getString(R.string.next_player, nextPlayer);
-        mNextButton.setText(nextLabel);
+        setButtonToFireRoll(true);
 
         setTitleText();
         mAdapter.setPlayer(currentPlayer);

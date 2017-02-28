@@ -1,5 +1,6 @@
 package info.dylansymons.fpfrhelper.game.utility;
 
+import java.io.Serializable;
 import java.util.Random;
 
 public class DiceRoller {
@@ -22,8 +23,8 @@ public class DiceRoller {
         return roll;
     }
 
-    private class DiceRoll {
-        int redValue;
-        int blackValue;
+    public class DiceRoll implements Serializable {
+        public int redValue;
+        public int blackValue;
     }
 }
