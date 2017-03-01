@@ -19,6 +19,7 @@ import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
  * @author dylan
  */
 public class Player implements Serializable {
+    public static final long NO_ID = -1;
     private final Stack<PerformedAction> actionHistory;
     private String mName;
     private Firefighter mFirefighter;
@@ -29,6 +30,7 @@ public class Player implements Serializable {
     private Firefighter.Action[] mActions;
     private boolean mHasActed;
     private Firefighter previousFirefighter;
+    private long mId;
 
     /**
      * Creates a new Player given a name, Firefighter, and colour
@@ -249,6 +251,14 @@ public class Player implements Serializable {
 
     public void setHasActed(boolean hasActed) {
         mHasActed = hasActed;
+    }
+
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(long id) {
+        mId = id;
     }
 
     private class PerformedAction implements Serializable {

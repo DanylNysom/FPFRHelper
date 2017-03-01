@@ -90,6 +90,12 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        db.close();
+    }
+
     private void loadInterstitial() {
         mInterstitialAd = new InterstitialAd(this);
         String unitId = getResources().getString(R.string.interstitial_ad_unit_id);
@@ -133,13 +139,13 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     private void showAddDialog() {
         DialogFragment fragment = NewPlayerDialogFragment.newInstance(
-                mGame.getFirefighterList(), mColourList, this);
+                mGame, mColourList, this);
         fragment.show(getFragmentManager(), "dialog");
     }
 
     private void showEditDialog(Player player) {
         DialogFragment fragment = NewPlayerDialogFragment.newEditInstance(
-                mGame.getFirefighterList(), mColourList, this, player);
+                mGame, mColourList, this, player);
         fragment.show(getFragmentManager(), "dialog");
     }
 
@@ -257,8 +263,6 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
 
     public void addPlayer(String name, Firefighter firefighter, int color) {
         enableFab(false);
-        mGame.getFirefighterList().setChosen(firefighter, true);
-
         mColourList.remove(Integer.valueOf(color));
 
         mGame.getPlayerList().add(new Player(name, firefighter, color));
@@ -269,7 +273,6 @@ public class NewGameActivity extends AppCompatActivity implements NewPlayerDialo
     public void editPlayer(String name, Firefighter firefighter, int color, Player player) {
         enableFab(false);
         int index = mGame.getPlayerList().indexOf(player);
-        mGame.getFirefighterList().setChosen(firefighter, true);
         player.setFirefighter(firefighter);
 
         mColourList.remove(Integer.valueOf(color));

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -20,40 +21,44 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import info.dylansymons.fpfrhelper.R;
+import info.dylansymons.fpfrhelper.database.GameContract;
+import info.dylansymons.fpfrhelper.database.GameDbHelper;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
-import info.dylansymons.fpfrhelper.firefighter.FirefighterList;
+import info.dylansymons.fpfrhelper.game.Game;
 import info.dylansymons.fpfrhelper.player.Player;
 
 public class NewPlayerDialogFragment extends DialogFragment {
     private static final String INSTANCE_PLAYER = "player";
-    private static final String INSTANCE_FIREFIGHTER_LIST = "firefighters";
+    //    private static final String INSTANCE_FIREFIGHTER_LIST = "firefighters";
     private static final String INSTANCE_COLOUR_LIST = "colours";
     private static final String INSTANCE_CALLBACK = "callback";
+    private static final String INSTANCE_GAME_ID = "game";
 
-    private FirefighterList mFirefighters;
+    private Game mGame;
+    //    private FirefighterList mFirefighters;
     private ArrayList<Integer> mColourList;
     private NewPlayerDialogFragmentCallback mCallback;
     private Player mPlayer;
+    private SQLiteDatabase mDb;
 
-    static NewPlayerDialogFragment newInstance(FirefighterList firefighterList,
-                                               ArrayList<Integer> colourList,
+    static NewPlayerDialogFragment newInstance(Game game, ArrayList<Integer> colourList,
                                                NewPlayerDialogFragmentCallback callback) {
         NewPlayerDialogFragment frag = new NewPlayerDialogFragment();
         Bundle args = new Bundle();
         args.putIntegerArrayList(INSTANCE_COLOUR_LIST, colourList);
-        args.putSerializable(INSTANCE_FIREFIGHTER_LIST, firefighterList);
+//        args.putSerializable(INSTANCE_FIREFIGHTER_LIST, firefighterList);
         args.putSerializable(INSTANCE_CALLBACK, callback);
+        args.putLong(INSTANCE_GAME_ID, game.getId());
         frag.setArguments(args);
         frag.setRetainInstance(true);
         return frag;
     }
 
-    static NewPlayerDialogFragment newEditInstance(FirefighterList firefighterList,
-                                                   ArrayList<Integer> colourList,
+    static NewPlayerDialogFragment newEditInstance(Game game, ArrayList<Integer> colourList,
                                                    NewPlayerDialogFragmentCallback callback,
                                                    Player player) {
-        NewPlayerDialogFragment frag = NewPlayerDialogFragment.newInstance(firefighterList,
-                colourList, callback);
+        NewPlayerDialogFragment frag = NewPlayerDialogFragment.newInstance(game, colourList,
+                callback);
         frag.getArguments().putSerializable(INSTANCE_PLAYER, player);
         return frag;
     }
@@ -73,11 +78,13 @@ public class NewPlayerDialogFragment extends DialogFragment {
         if (savedInstanceState == null) {
             savedInstanceState = getArguments();
         }
+        mDb = new GameDbHelper(getActivity()).getWritableDatabase();
+        long gameId = savedInstanceState.getLong(INSTANCE_GAME_ID);
+        mGame = GameContract.restore(mDb, gameId);
         mColourList = savedInstanceState.getIntegerArrayList(INSTANCE_COLOUR_LIST);
-        mFirefighters = (FirefighterList)
-                savedInstanceState.getSerializable(INSTANCE_FIREFIGHTER_LIST);
         mCallback = (NewPlayerDialogFragmentCallback)
                 savedInstanceState.getSerializable(INSTANCE_CALLBACK);
+
         mPlayer = (Player) savedInstanceState.getSerializable(INSTANCE_PLAYER);
 
         View parentView = getActivity().findViewById(R.id.content_new_game);
@@ -85,7 +92,7 @@ public class NewPlayerDialogFragment extends DialogFragment {
                 (ViewGroup) parentView, false);
 
         if (mPlayer != null) {
-            mFirefighters.add(mPlayer.getFirefighter());
+            mGame.getFirefighterList().setChosen(mPlayer.getFirefighter(), false);
             mColourList.add(mPlayer.getColour());
             ((EditText) view.findViewById(R.id.et_player_name)).setText(mPlayer.getName());
         }
@@ -103,7 +110,7 @@ public class NewPlayerDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.cancel();
                 if (mPlayer != null) {
-                    mFirefighters.remove(mPlayer.getFirefighter());
+                    mGame.getFirefighterList().remove(mPlayer.getFirefighter());
                     mColourList.remove(Integer.valueOf(mPlayer.getColour()));
                 }
             }
@@ -111,11 +118,11 @@ public class NewPlayerDialogFragment extends DialogFragment {
 
         final ListView ffList = (ListView) view.findViewById(R.id.lst_firefighter);
         Firefighter[] firefighterArray;
-        if (mFirefighters.size() > 1) {
-            firefighterArray = mFirefighters.toArray(new Firefighter[0]);
+        if (mGame.getFirefighterList().size() > 1) {
+            firefighterArray = mGame.getFirefighterList().toArray(new Firefighter[0]);
         } else {
             firefighterArray = new Firefighter[1];
-            firefighterArray[0] = mFirefighters.getLast();
+            firefighterArray[0] = mGame.getFirefighterList().getLast();
         }
         ArrayAdapter<Firefighter> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_activated_1,
@@ -196,7 +203,8 @@ public class NewPlayerDialogFragment extends DialogFragment {
         if (color == Color.BLACK) {
             color = Color.WHITE;
         }
-
+        mGame.getFirefighterList().setChosen(firefighter, true);
+        GameContract.save(mDb, mGame);
         if (mPlayer == null) {
             mCallback.addPlayer(name, firefighter, color);
         } else {

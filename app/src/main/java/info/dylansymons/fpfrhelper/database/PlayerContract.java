@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import info.dylansymons.fpfrhelper.firefighter.Firefighter;
 import info.dylansymons.fpfrhelper.player.Player;
 
-final class PlayerContract {
+public final class PlayerContract {
     static final String SQL_CREATE =
             "CREATE TABLE " + PlayerEntry.TABLE_NAME + " (" +
                     PlayerEntry._ID + " INTEGER PRIMARY KEY," +
@@ -31,10 +31,15 @@ final class PlayerContract {
     private PlayerContract() {
     }
 
-    private static void create(SQLiteDatabase db, Player player, long gameId, int position) {
+    private static void save(SQLiteDatabase db, Player player, long gameId, int position) {
         ContentValues values = fillContentValues(player, gameId, position);
-
-        db.insert(PlayerEntry.TABLE_NAME, null, values);
+        if (player.getId() != Player.NO_ID) {
+            player.setId(db.insert(PlayerEntry.TABLE_NAME, null, values));
+        } else {
+            String where = PlayerEntry._ID + " = ?";
+            String[] whereArgs = {String.valueOf(player.getId())};
+            db.update(PlayerEntry.TABLE_NAME, values, where, whereArgs);
+        }
     }
 
     private static ContentValues fillContentValues(Player player, long gameId, int position) {
@@ -57,7 +62,7 @@ final class PlayerContract {
 
     static void createPlayerList(SQLiteDatabase db, ArrayList<Player> players, long gameId) {
         for (Player player : players) {
-            create(db, player, gameId, players.indexOf(player));
+            save(db, player, gameId, players.indexOf(player));
         }
     }
 
@@ -82,8 +87,28 @@ final class PlayerContract {
         return playerList;
     }
 
+    public static Player restore(SQLiteDatabase db, long playerId) {
+        String selection = PlayerEntry._ID + " = ?";
+        String[] selectionArgs = {String.valueOf(playerId)};
+        Cursor result = db.query(
+                PlayerEntry.TABLE_NAME,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+        if (result.moveToFirst()) {
+            return restoreFromCursor(result);
+        } else {
+            return null;
+        }
+    }
+
     private static Player restoreFromCursor(Cursor result) {
         Player player = new Player();
+        player.setId(result.getLong(result.getColumnIndex(PlayerEntry._ID)));
         player.setName(result.getString(result.getColumnIndex(PlayerEntry.COLUMN_NAME_NAME)));
         player.setColour(result.getInt(result.getColumnIndex(PlayerEntry.COLUMN_NAME_COLOUR)));
         player.setAp(result.getInt(result.getColumnIndex(PlayerEntry.COLUMN_NAME_AP)));
@@ -108,7 +133,7 @@ final class PlayerContract {
         String[] whereArgs = {String.valueOf(gameId)};
         db.delete(PlayerEntry.TABLE_NAME, where, whereArgs);
         for (Player player : players) {
-            create(db, player, gameId, players.indexOf(player));
+            save(db, player, gameId, players.indexOf(player));
         }
     }
 
